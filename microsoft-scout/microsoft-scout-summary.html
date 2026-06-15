@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microsoft Scout まとめ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #1a1a1a;
+            --border-color: #e0e0e0;
+            --code-bg: #f5f5f5;
+            --heading-color: #0078d4;
+            --table-header-bg: #f0f0f0;
+            --table-border-color: #d0d0d0;
+            --link-color: #0078d4;
+        }
+
+        html.dark-mode {
+            --bg-color: #1e1e1e;
+            --text-color: #e0e0e0;
+            --border-color: #404040;
+            --code-bg: #2d2d2d;
+            --heading-color: #58b5ff;
+            --table-header-bg: #2d2d2d;
+            --table-border-color: #505050;
+            --link-color: #58b5ff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', Meiryo, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            background-color: var(--heading-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            z-index: 100;
+        }
+
+        .theme-toggle:hover {
+            opacity: 0.8;
+        }
+
+        h1 {
+            color: var(--heading-color);
+            margin: 40px 0 20px 0;
+            font-size: 2em;
+        }
+
+        h2 {
+            color: var(--heading-color);
+            margin: 30px 0 15px 0;
+            font-size: 1.5em;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: var(--heading-color);
+            margin: 20px 0 10px 0;
+            font-size: 1.2em;
+        }
+
+        p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        a:hover {
+            border-bottom-color: var(--link-color);
+        }
+
+        code {
+            background-color: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border-left: 4px solid var(--heading-color);
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid var(--table-border-color);
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--table-header-bg);
+            font-weight: 600;
+            color: var(--heading-color);
+        }
+
+        tr:nth-child(even) {
+            background-color: var(--code-bg);
+        }
+
+        .info-box {
+            background-color: var(--code-bg);
+            border-left: 4px solid var(--heading-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        strong {
+            color: var(--heading-color);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.6em;
+                margin: 30px 0 15px 0;
+            }
+
+            h2 {
+                font-size: 1.3em;
+                margin: 25px 0 12px 0;
+            }
+
+            h3 {
+                font-size: 1.1em;
+            }
+
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+
+            ul, ol {
+                margin-left: 20px;
+            }
+        }
+
+        .toc {
+            background-color: var(--code-bg);
+            padding: 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+        }
+
+        .toc ul {
+            list-style-type: none;
+            margin-left: 0;
+        }
+
+        .toc li {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .toc a {
+            color: var(--link-color);
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()">🌙 ダークモード</button>
+
+    <div class="container">
+        <h1>Microsoft Scout まとめ</h1>
+
+        <h2>概要</h2>
+        <p>Microsoft Scout は、Microsoft が 2026 年 6 月に発表した <strong>「Autopilot」カテゴリの最初のエージェント</strong>です。<br>
+        Windows / macOS 向けのデスクトップ AI アプリとして提供され、<strong>ローカル PC 上のファイル・シェル・ブラウザー操作</strong>と、<strong>Microsoft 365 のメール・予定表・Teams・OneDrive などの業務データ</strong>をまたいで動作します。</p>
+
+        <p>単なるチャット応答ではなく、<strong>ユーザーの代わりに実際の操作を進める</strong>ことが中心で、必要に応じて承認を取りながらタスクを継続実行できます。</p>
+
+        <h2>何ができるか</h2>
+        <ul>
+            <li>ワークスペース内のファイルの読み書き・検索</li>
+            <li>シェル コマンド、ビルド、テスト、スクリプト実行</li>
+            <li>ブラウザー自動操作（ページ遷移、入力、フォーム操作など）</li>
+            <li>Microsoft 365 のメール、予定表、Teams、OneDrive、会議データの活用</li>
+            <li>バックグラウンドでの定期実行や条件付き自動化</li>
+            <li>サブエージェントへの委譲による並列処理</li>
+            <li>Word / Excel / PowerPoint などのドキュメント操作</li>
+        </ul>
+
+        <h2>特徴</h2>
+
+        <h3>1. ローカル + クラウドの統合</h3>
+        <p>Scout はローカル PC 上で動きつつ、Microsoft 365 と接続できます。<br>
+        そのため、たとえば <strong>コードを編集してビルドし、その結果を共有し、次の打ち合わせを調整する</strong> といった複数段階の作業を一連で扱えます。</p>
+
+        <h3>2. 常時稼働寄りのエージェント</h3>
+        <p>Scout は「その場で答えるチャット」よりも、<strong>作業を継続して前に進めること</strong>が重視されています。<br>
+        Microsoft 365 Blog では、Scout を「always-on personal agent」と位置付けており、スケジュール調整、会議準備、進行中タスクの追跡、リスク検知などを継続的に支援する想定です。</p>
+
+        <h3>3. 細かな権限制御</h3>
+        <ul>
+            <li>ファイル システム</li>
+            <li>シェル</li>
+            <li>ブラウザー</li>
+            <li>Microsoft 365 連携</li>
+        </ul>
+        <p>といった機能ごとに制御でき、<strong>機微な操作は承認必須</strong>にできます。<br>
+        機密パスの明示、コマンドの自動承認ルール、送信系アクションの確認など、企業利用を前提にした設計です。</p>
+
+        <h3>4. Enterprise 向け設計</h3>
+        <p>Microsoft は Scout を <strong>enterprise-grade security and controls</strong> を備えたものとして説明しています。<br>
+        Entra ID、Intune、Microsoft Purview、組織ポリシーに沿って運用される前提で、単独の個人向けツールというより <strong>企業テナント向けの AI エージェント</strong>です。</p>
+
+        <h2>利用条件と提供状況</h2>
+        <p>現時点では <strong>一般提供ではなくプレビュー段階</strong>です。</p>
+
+        <ul>
+            <li><strong>Microsoft Frontier preview program</strong> への参加が必要</li>
+            <li><strong>Microsoft 365 Copilot ライセンス</strong>が必要</li>
+            <li><strong>GitHub Copilot Business または Enterprise</strong> が必要</li>
+            <li><strong>Windows 11</strong> または <strong>macOS 12 以降</strong> が必要</li>
+            <li><strong>個人用 Microsoft アカウントは非対応</strong></li>
+            <li>組織管理者による <strong>Frontier 有効化 + Intune 設定 + attestation</strong> が必要</li>
+        </ul>
+
+        <div class="info-box">
+            つまり、<strong>アプリを入れるだけでは使えず、組織側の事前設定が必須</strong>です。
+        </div>
+
+        <h2>Copilot Chat との違い</h2>
+        <p>Scout は Copilot Chat よりも <strong>実行主体</strong>に寄っています。</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>項目</th>
+                    <th>Copilot Chat</th>
+                    <th>Microsoft Scout</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>主な役割</td>
+                    <td>生成・要約・Q&A</td>
+                    <td>実操作を伴うタスク実行</td>
+                </tr>
+                <tr>
+                    <td>ローカル ファイル</td>
+                    <td>基本なし</td>
+                    <td>あり</td>
+                </tr>
+                <tr>
+                    <td>シェル実行</td>
+                    <td>なし</td>
+                    <td>あり</td>
+                </tr>
+                <tr>
+                    <td>ブラウザー操作</td>
+                    <td>なし</td>
+                    <td>あり</td>
+                </tr>
+                <tr>
+                    <td>自律実行</td>
+                    <td>なし</td>
+                    <td>あり</td>
+                </tr>
+                <tr>
+                    <td>向いている用途</td>
+                    <td>単発の会話支援</td>
+                    <td>複数ステップの継続作業、自動化</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>押さえるべきポイント</h2>
+        <ul>
+            <li><strong>Microsoft Scout は「Microsoft 365 とローカル端末をまたぐ実行型 AI エージェント」</strong></li>
+            <li><strong>Build 2026 前後で公開された新しい Autopilot の代表例</strong></li>
+            <li><strong>企業管理下での運用が前提</strong></li>
+            <li><strong>現時点では Frontier ベースの preview</strong></li>
+            <li><strong>単なるチャット UI ではなく、自律実行と承認付き操作が本質</strong></li>
+        </ul>
+
+        <h2>参考ソース</h2>
+        <ol>
+            <li><a href="https://www.microsoft.com/en-us/microsoft-365/blog/2026/06/02/introducing-microsoft-scout-your-always-on-personal-agent/" target="_blank">Microsoft 365 Blog: Introducing Microsoft Scout: Your always-on personal agent</a></li>
+            <li><a href="https://learn.microsoft.com/en-us/microsoft-scout/overview" target="_blank">Microsoft Learn: Microsoft Scout overview</a></li>
+            <li><a href="https://learn.microsoft.com/en-us/microsoft-scout/get-started" target="_blank">Microsoft Learn: Get started with Microsoft Scout</a></li>
+            <li><a href="https://learn.microsoft.com/en-us/microsoft-scout/faq" target="_blank">Microsoft Learn: Microsoft Scout common questions</a></li>
+            <li><a href="https://learn.microsoft.com/en-us/microsoft-scout/admin-access-overview" target="_blank">Microsoft Learn: Admin access overview for Microsoft Scout</a></li>
+        </ol>
+    </div>
+
+    <script>
+        // テーマ切り替え機能
+        function toggleTheme() {
+            const html = document.documentElement;
+            const savedTheme = localStorage.getItem('theme');
+            
+            if (!savedTheme) {
+                // 初回：ダークモードをセット
+                localStorage.setItem('theme', 'dark');
+            } else {
+                // 以降：保存済みテーマをトグル
+                const newTheme = savedTheme === 'light' ? 'dark' : 'light';
+                localStorage.setItem('theme', newTheme);
+            }
+            
+            updateTheme();
+        }
+
+        function updateTheme() {
+            const html = document.documentElement;
+            const button = document.querySelector('.theme-toggle');
+            const savedTheme = localStorage.getItem('theme');
+            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            // テーマの決定（保存済み > システム設定 > デフォルトはライト）
+            const shouldBeDark = savedTheme ? savedTheme === 'dark' : isDark;
+            
+            if (shouldBeDark) {
+                html.classList.add('dark-mode');
+                button.textContent = '☀️ ライトモード';
+            } else {
+                html.classList.remove('dark-mode');
+                button.textContent = '🌙 ダークモード';
+            }
+        }
+
+        // ページロード時にテーマを適用
+        document.addEventListener('DOMContentLoaded', updateTheme);
+        
+        // システムテーマが変更された場合に対応
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            // 保存済みテーマがない場合のみシステム設定に追従
+            if (!localStorage.getItem('theme')) {
+                updateTheme();
+            }
+        });
+    </script>
+</body>
+</html>
