@@ -1,0 +1,1514 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.43.1.21952",
+      "templateHash": "12515515946725738693"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    },
+    "storageAccountSuffix": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 22,
+      "metadata": {
+        "description": "Suffix for the storage account name. Lowercase alphanumeric only."
+      }
+    },
+    "storageSku": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_GRS",
+        "Standard_RAGRS",
+        "Standard_ZRS",
+        "Standard_GZRS",
+        "Standard_RAGZRS"
+      ],
+      "metadata": {
+        "description": "Storage account SKU."
+      }
+    },
+    "publicNetworkAccess": {
+      "type": "string",
+      "defaultValue": "Enabled",
+      "metadata": {
+        "description": "Enable public network access for the storage account."
+      }
+    },
+    "tableName": {
+      "type": "string",
+      "defaultValue": "backlogidempotency",
+      "metadata": {
+        "description": "Table name for idempotency records."
+      }
+    },
+    "blobContainers": {
+      "type": "array",
+      "defaultValue": [
+        "backlog-webhook-raw",
+        "backlog-agent-results",
+        "backlog-agent-dlq"
+      ],
+      "metadata": {
+        "description": "Blob containers to create in the same storage account for webhook operations."
+      }
+    },
+    "applicationInsightsSuffix": {
+      "type": "string",
+      "metadata": {
+        "description": "Suffix for the Application Insights name."
+      }
+    },
+    "keyVaultSuffix": {
+      "type": "string",
+      "metadata": {
+        "description": "Suffix for the Key Vault name."
+      }
+    },
+    "serviceBusNamespaceSuffix": {
+      "type": "string",
+      "metadata": {
+        "description": "Suffix for the Service Bus namespace name."
+      }
+    },
+    "ingressQueueName": {
+      "type": "string",
+      "defaultValue": "backlog-webhook-ingress",
+      "metadata": {
+        "description": "Ingress queue name."
+      }
+    },
+    "actionsQueueName": {
+      "type": "string",
+      "defaultValue": "backlog-agent-actions",
+      "metadata": {
+        "description": "Dead-letter or follow-up queue name."
+      }
+    },
+    "functionPlanSuffix": {
+      "type": "string",
+      "metadata": {
+        "description": "Suffix for the Function App plan name."
+      }
+    },
+    "receiverFunctionAppSuffix": {
+      "type": "string",
+      "metadata": {
+        "description": "Suffix for the receiver Function App name."
+      }
+    },
+    "workerFunctionAppSuffix": {
+      "type": "string",
+      "metadata": {
+        "description": "Suffix for the worker Function App name."
+      }
+    },
+    "functionsWorkerRuntime": {
+      "type": "string",
+      "defaultValue": "dotnet-isolated",
+      "metadata": {
+        "description": "Functions worker runtime."
+      }
+    },
+    "frontDoorProfileSuffix": {
+      "type": "string",
+      "metadata": {
+        "description": "Suffix for the Front Door profile name."
+      }
+    },
+    "frontDoorEndpointSuffix": {
+      "type": "string",
+      "metadata": {
+        "description": "Suffix for the Front Door endpoint name."
+      }
+    }
+  },
+  "variables": {
+    "$fxv#0": {
+      "aiFoundryAccounts": "aif",
+      "analysisServicesServers": "as",
+      "apiManagementService": "apim-",
+      "appConfigurationStores": "appcs-",
+      "appManagedEnvironments": "cae-",
+      "appContainerApps": "ca-",
+      "authorizationPolicyDefinitions": "policy-",
+      "automationAutomationAccounts": "aa-",
+      "blueprintBlueprints": "bp-",
+      "blueprintBlueprintsArtifacts": "bpa-",
+      "cacheRedis": "redis-",
+      "cdnProfiles": "cdnp-",
+      "cdnProfilesEndpoints": "cdne-",
+      "cognitiveServicesAccounts": "cog-",
+      "cognitiveServicesFormRecognizer": "cog-fr-",
+      "cognitiveServicesTextAnalytics": "cog-ta-",
+      "computeAvailabilitySets": "avail-",
+      "computeCloudServices": "cld-",
+      "computeDiskEncryptionSets": "des",
+      "computeDisks": "disk",
+      "computeDisksOs": "osdisk",
+      "computeGalleries": "gal",
+      "computeSnapshots": "snap-",
+      "computeVirtualMachines": "vm",
+      "computeVirtualMachineScaleSets": "vmss-",
+      "containerInstanceContainerGroups": "ci",
+      "containerRegistryRegistries": "cr",
+      "containerServiceManagedClusters": "aks-",
+      "databricksWorkspaces": "dbw-",
+      "dataFactoryFactories": "adf-",
+      "dataLakeAnalyticsAccounts": "dla",
+      "dataLakeStoreAccounts": "dls",
+      "dataMigrationServices": "dms-",
+      "dBforMySQLServers": "mysql-",
+      "dBforPostgreSQLServers": "psql-",
+      "devicesIotHubs": "iot-",
+      "devicesProvisioningServices": "provs-",
+      "devicesProvisioningServicesCertificates": "pcert-",
+      "documentDBDatabaseAccounts": "cosmos-",
+      "documentDBMongoDatabaseAccounts": "cosmon-",
+      "eventGridDomains": "evgd-",
+      "eventGridDomainsTopics": "evgt-",
+      "eventGridEventSubscriptions": "evgs-",
+      "eventHubNamespaces": "evhns-",
+      "eventHubNamespacesEventHubs": "evh-",
+      "hdInsightClustersHadoop": "hadoop-",
+      "hdInsightClustersHbase": "hbase-",
+      "hdInsightClustersKafka": "kafka-",
+      "hdInsightClustersMl": "mls-",
+      "hdInsightClustersSpark": "spark-",
+      "hdInsightClustersStorm": "storm-",
+      "hybridComputeMachines": "arcs-",
+      "insightsActionGroups": "ag-",
+      "insightsComponents": "appi-",
+      "keyVaultVaults": "kv-",
+      "kubernetesConnectedClusters": "arck",
+      "kustoClusters": "dec",
+      "kustoClustersDatabases": "dedb",
+      "logicIntegrationAccounts": "ia-",
+      "logicWorkflows": "logic-",
+      "machineLearningServicesWorkspaces": "mlw-",
+      "managedIdentityUserAssignedIdentities": "id-",
+      "managementManagementGroups": "mg-",
+      "migrateAssessmentProjects": "migr-",
+      "networkApplicationGateways": "agw-",
+      "networkApplicationSecurityGroups": "asg-",
+      "networkAzureFirewalls": "afw-",
+      "networkBastionHosts": "bas-",
+      "networkConnections": "con-",
+      "networkDnsZones": "dnsz-",
+      "networkExpressRouteCircuits": "erc-",
+      "networkFirewallPolicies": "afwp-",
+      "networkFirewallPoliciesWebApplication": "waf",
+      "networkFirewallPoliciesRuleGroups": "wafrg",
+      "networkFrontDoors": "fd-",
+      "networkFrontdoorWebApplicationFirewallPolicies": "fdfp-",
+      "networkLoadBalancersExternal": "lbe-",
+      "networkLoadBalancersInternal": "lbi-",
+      "networkLoadBalancersInboundNatRules": "rule-",
+      "networkLocalNetworkGateways": "lgw-",
+      "networkNatGateways": "ng-",
+      "networkNetworkInterfaces": "nic-",
+      "networkNetworkSecurityGroups": "nsg-",
+      "networkNetworkSecurityGroupsSecurityRules": "nsgsr-",
+      "networkNetworkWatchers": "nw-",
+      "networkPrivateDnsZones": "pdnsz-",
+      "networkPrivateLinkServices": "pl-",
+      "networkPublicIPAddresses": "pip-",
+      "networkPublicIPPrefixes": "ippre-",
+      "networkRouteFilters": "rf-",
+      "networkRouteTables": "rt-",
+      "networkRouteTablesRoutes": "udr-",
+      "networkTrafficManagerProfiles": "traf-",
+      "networkVirtualNetworkGateways": "vgw-",
+      "networkVirtualNetworks": "vnet-",
+      "networkVirtualNetworksSubnets": "snet-",
+      "networkVirtualNetworksVirtualNetworkPeerings": "peer-",
+      "networkVirtualWans": "vwan-",
+      "networkVpnGateways": "vpng-",
+      "networkVpnGatewaysVpnConnections": "vcn-",
+      "networkVpnGatewaysVpnSites": "vst-",
+      "notificationHubsNamespaces": "ntfns-",
+      "notificationHubsNamespacesNotificationHubs": "ntf-",
+      "operationalInsightsWorkspaces": "log-",
+      "portalDashboards": "dash-",
+      "powerBIDedicatedCapacities": "pbi-",
+      "purviewAccounts": "pview-",
+      "recoveryServicesVaults": "rsv-",
+      "resourcesResourceGroups": "rg-",
+      "searchSearchServices": "srch-",
+      "serviceBusNamespaces": "sb-",
+      "serviceBusNamespacesQueues": "sbq-",
+      "serviceBusNamespacesTopics": "sbt-",
+      "serviceEndPointPolicies": "se-",
+      "serviceFabricClusters": "sf-",
+      "signalRServiceSignalR": "sigr",
+      "sqlManagedInstances": "sqlmi-",
+      "sqlServers": "sql-",
+      "sqlServersDataWarehouse": "sqldw-",
+      "sqlServersDatabases": "sqldb-",
+      "sqlServersDatabasesStretch": "sqlstrdb-",
+      "storageStorageAccounts": "st",
+      "storageStorageAccountsVm": "stvm",
+      "storSimpleManagers": "ssimp",
+      "streamAnalyticsCluster": "asa-",
+      "synapseWorkspaces": "syn",
+      "synapseWorkspacesAnalyticsWorkspaces": "synw",
+      "synapseWorkspacesSqlPoolsDedicated": "syndp",
+      "synapseWorkspacesSqlPoolsSpark": "synsp",
+      "timeSeriesInsightsEnvironments": "tsi-",
+      "webServerFarms": "plan-",
+      "webSitesAppService": "app-",
+      "webSitesAppServiceEnvironment": "ase-",
+      "webSitesFunctions": "func-",
+      "webStaticSites": "stapp-"
+    },
+    "abbreviations": "[variables('$fxv#0')]",
+    "storagePrefix": "[string(variables('abbreviations').storageStorageAccounts)]",
+    "appInsightsPrefix": "[string(variables('abbreviations').insightsComponents)]",
+    "keyVaultPrefix": "[string(variables('abbreviations').keyVaultVaults)]",
+    "serviceBusPrefix": "[string(variables('abbreviations').serviceBusNamespaces)]",
+    "functionPlanPrefix": "[string(variables('abbreviations').webServerFarms)]",
+    "functionAppPrefix": "[string(variables('abbreviations').webSitesFunctions)]",
+    "frontDoorPrefix": "[string(variables('abbreviations').networkFrontDoors)]",
+    "storageAccountName": "[toLower(format('{0}{1}', variables('storagePrefix'), parameters('storageAccountSuffix')))]",
+    "applicationInsightsName": "[toLower(format('{0}{1}', variables('appInsightsPrefix'), parameters('applicationInsightsSuffix')))]",
+    "keyVaultName": "[toLower(format('{0}{1}', variables('keyVaultPrefix'), parameters('keyVaultSuffix')))]",
+    "serviceBusNamespaceName": "[toLower(format('{0}{1}', variables('serviceBusPrefix'), parameters('serviceBusNamespaceSuffix')))]",
+    "functionPlanName": "[toLower(format('{0}{1}', variables('functionPlanPrefix'), parameters('functionPlanSuffix')))]",
+    "receiverFunctionAppName": "[toLower(format('{0}{1}', variables('functionAppPrefix'), parameters('receiverFunctionAppSuffix')))]",
+    "workerFunctionAppName": "[toLower(format('{0}{1}', variables('functionAppPrefix'), parameters('workerFunctionAppSuffix')))]",
+    "frontDoorProfileName": "[toLower(format('{0}{1}', variables('frontDoorPrefix'), parameters('frontDoorProfileSuffix')))]",
+    "frontDoorEndpointName": "[toLower(format('{0}{1}', variables('frontDoorPrefix'), parameters('frontDoorEndpointSuffix')))]",
+    "frontDoorOriginGroupName": "[toLower(format('{0}{1}-og', variables('frontDoorPrefix'), parameters('frontDoorEndpointSuffix')))]",
+    "frontDoorOriginName": "[toLower(format('{0}{1}-origin', variables('frontDoorPrefix'), parameters('frontDoorEndpointSuffix')))]",
+    "frontDoorRouteName": "[toLower(format('{0}{1}-route', variables('frontDoorPrefix'), parameters('frontDoorEndpointSuffix')))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "storageAccount",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "storageAccountName": {
+            "value": "[variables('storageAccountName')]"
+          },
+          "storageSku": {
+            "value": "[parameters('storageSku')]"
+          },
+          "publicNetworkAccess": {
+            "value": "[parameters('publicNetworkAccess')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.1.21952",
+              "templateHash": "7745761559372398009"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for the storage account."
+              }
+            },
+            "storageAccountName": {
+              "type": "string",
+              "maxLength": 24,
+              "metadata": {
+                "description": "Globally unique storage account name."
+              }
+            },
+            "storageSku": {
+              "type": "string",
+              "allowedValues": [
+                "Standard_LRS",
+                "Standard_GRS",
+                "Standard_RAGRS",
+                "Standard_ZRS",
+                "Standard_GZRS",
+                "Standard_RAGZRS"
+              ],
+              "metadata": {
+                "description": "Storage account SKU."
+              }
+            },
+            "publicNetworkAccess": {
+              "type": "string",
+              "metadata": {
+                "description": "Enable public network access for the storage account."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Storage/storageAccounts",
+              "apiVersion": "2023-05-01",
+              "name": "[parameters('storageAccountName')]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "[parameters('storageSku')]"
+              },
+              "kind": "StorageV2",
+              "properties": {
+                "accessTier": "Hot",
+                "allowBlobPublicAccess": false,
+                "allowSharedKeyAccess": true,
+                "minimumTlsVersion": "TLS1_2",
+                "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
+                "supportsHttpsTrafficOnly": true
+              }
+            }
+          ],
+          "outputs": {
+            "storageAccountId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+            },
+            "storageAccountName": {
+              "type": "string",
+              "value": "[parameters('storageAccountName')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "blobContainers",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "storageAccountName": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'storageAccount'), '2025-04-01').outputs.storageAccountName.value]"
+          },
+          "blobContainers": {
+            "value": "[parameters('blobContainers')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.1.21952",
+              "templateHash": "14953062525591161051"
+            }
+          },
+          "parameters": {
+            "storageAccountName": {
+              "type": "string",
+              "metadata": {
+                "description": "Existing storage account name."
+              }
+            },
+            "blobContainers": {
+              "type": "array",
+              "metadata": {
+                "description": "Blob containers to create."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Storage/storageAccounts/blobServices",
+              "apiVersion": "2023-05-01",
+              "name": "[format('{0}/{1}', parameters('storageAccountName'), 'default')]"
+            },
+            {
+              "copy": {
+                "name": "containers",
+                "count": "[length(parameters('blobContainers'))]"
+              },
+              "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+              "apiVersion": "2023-05-01",
+              "name": "[format('{0}/{1}/{2}', parameters('storageAccountName'), 'default', parameters('blobContainers')[copyIndex()])]",
+              "properties": {
+                "publicAccess": "None"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccountName'), 'default')]"
+              ]
+            }
+          ],
+          "outputs": {
+            "blobEndpoint": {
+              "type": "string",
+              "value": "[format('https://{0}.blob.{1}', parameters('storageAccountName'), environment().suffixes.storage)]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'storageAccount')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "tableStorage",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "storageAccountName": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'storageAccount'), '2025-04-01').outputs.storageAccountName.value]"
+          },
+          "tableName": {
+            "value": "[parameters('tableName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.1.21952",
+              "templateHash": "7506507147858790626"
+            }
+          },
+          "parameters": {
+            "storageAccountName": {
+              "type": "string",
+              "metadata": {
+                "description": "Existing storage account name."
+              }
+            },
+            "tableName": {
+              "type": "string",
+              "metadata": {
+                "description": "Table name for idempotency records."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Storage/storageAccounts/tableServices",
+              "apiVersion": "2023-05-01",
+              "name": "[format('{0}/{1}', parameters('storageAccountName'), 'default')]"
+            },
+            {
+              "type": "Microsoft.Storage/storageAccounts/tableServices/tables",
+              "apiVersion": "2023-05-01",
+              "name": "[format('{0}/{1}/{2}', parameters('storageAccountName'), 'default', parameters('tableName'))]",
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/tableServices', parameters('storageAccountName'), 'default')]"
+              ]
+            }
+          ],
+          "outputs": {
+            "tableName": {
+              "type": "string",
+              "value": "[parameters('tableName')]"
+            },
+            "tableEndpoint": {
+              "type": "string",
+              "value": "[format('https://{0}.table.{1}', parameters('storageAccountName'), environment().suffixes.storage)]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'storageAccount')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "applicationInsights",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "applicationInsightsName": {
+            "value": "[variables('applicationInsightsName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.1.21952",
+              "templateHash": "7098993287298472613"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for Application Insights."
+              }
+            },
+            "applicationInsightsName": {
+              "type": "string",
+              "metadata": {
+                "description": "Application Insights resource name."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Insights/components",
+              "apiVersion": "2020-02-02",
+              "name": "[parameters('applicationInsightsName')]",
+              "location": "[parameters('location')]",
+              "kind": "web",
+              "properties": {
+                "Application_Type": "web",
+                "WorkspaceResourceId": null,
+                "IngestionMode": "ApplicationInsights"
+              }
+            }
+          ],
+          "outputs": {
+            "applicationInsightsId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]"
+            },
+            "connectionString": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Insights/components', parameters('applicationInsightsName')), '2020-02-02').ConnectionString]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "keyVault",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "keyVaultName": {
+            "value": "[variables('keyVaultName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.1.21952",
+              "templateHash": "7521952943717857649"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for Key Vault."
+              }
+            },
+            "keyVaultName": {
+              "type": "string",
+              "metadata": {
+                "description": "Key Vault name."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.KeyVault/vaults",
+              "apiVersion": "2023-07-01",
+              "name": "[parameters('keyVaultName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "enableRbacAuthorization": true,
+                "enabledForDeployment": false,
+                "enabledForDiskEncryption": false,
+                "enabledForTemplateDeployment": false,
+                "publicNetworkAccess": "Enabled",
+                "sku": {
+                  "family": "A",
+                  "name": "standard"
+                },
+                "tenantId": "[subscription().tenantId]",
+                "softDeleteRetentionInDays": 90
+              }
+            }
+          ],
+          "outputs": {
+            "keyVaultId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+            },
+            "vaultUri": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName')), '2023-07-01').vaultUri]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "serviceBus",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "serviceBusNamespaceName": {
+            "value": "[variables('serviceBusNamespaceName')]"
+          },
+          "ingressQueueName": {
+            "value": "[parameters('ingressQueueName')]"
+          },
+          "actionsQueueName": {
+            "value": "[parameters('actionsQueueName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.1.21952",
+              "templateHash": "7723919084059163471"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for Service Bus."
+              }
+            },
+            "serviceBusNamespaceName": {
+              "type": "string",
+              "metadata": {
+                "description": "Service Bus namespace name."
+              }
+            },
+            "ingressQueueName": {
+              "type": "string",
+              "metadata": {
+                "description": "Ingress queue name."
+              }
+            },
+            "actionsQueueName": {
+              "type": "string",
+              "metadata": {
+                "description": "Secondary queue name."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ServiceBus/namespaces",
+              "apiVersion": "2022-10-01-preview",
+              "name": "[parameters('serviceBusNamespaceName')]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Standard",
+                "tier": "Standard"
+              },
+              "properties": {
+                "publicNetworkAccess": "Enabled",
+                "minimumTlsVersion": "1.2"
+              }
+            },
+            {
+              "type": "Microsoft.ServiceBus/namespaces/queues",
+              "apiVersion": "2022-10-01-preview",
+              "name": "[format('{0}/{1}', parameters('serviceBusNamespaceName'), parameters('ingressQueueName'))]",
+              "properties": {
+                "deadLetteringOnMessageExpiration": true,
+                "lockDuration": "PT1M",
+                "maxDeliveryCount": 10,
+                "requiresDuplicateDetection": false
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ServiceBus/namespaces', parameters('serviceBusNamespaceName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.ServiceBus/namespaces/queues",
+              "apiVersion": "2022-10-01-preview",
+              "name": "[format('{0}/{1}', parameters('serviceBusNamespaceName'), parameters('actionsQueueName'))]",
+              "properties": {
+                "deadLetteringOnMessageExpiration": true,
+                "lockDuration": "PT1M",
+                "maxDeliveryCount": 10,
+                "requiresDuplicateDetection": false
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ServiceBus/namespaces', parameters('serviceBusNamespaceName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "namespaceId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.ServiceBus/namespaces', parameters('serviceBusNamespaceName'))]"
+            },
+            "namespaceName": {
+              "type": "string",
+              "value": "[parameters('serviceBusNamespaceName')]"
+            },
+            "ingressQueueName": {
+              "type": "string",
+              "value": "[parameters('ingressQueueName')]"
+            },
+            "actionsQueueName": {
+              "type": "string",
+              "value": "[parameters('actionsQueueName')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "functionPlan",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "functionPlanName": {
+            "value": "[variables('functionPlanName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.1.21952",
+              "templateHash": "8116279196083105927"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for the Function App plan."
+              }
+            },
+            "functionPlanName": {
+              "type": "string",
+              "metadata": {
+                "description": "App Service plan name for Function Apps."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Web/serverfarms",
+              "apiVersion": "2023-12-01",
+              "name": "[parameters('functionPlanName')]",
+              "location": "[parameters('location')]",
+              "kind": "functionapp",
+              "sku": {
+                "name": "Y1",
+                "tier": "Dynamic"
+              },
+              "properties": {
+                "reserved": false
+              }
+            }
+          ],
+          "outputs": {
+            "functionPlanId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Web/serverfarms', parameters('functionPlanName'))]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "receiverFunctionApp",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "functionAppName": {
+            "value": "[variables('receiverFunctionAppName')]"
+          },
+          "appServicePlanId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'functionPlan'), '2025-04-01').outputs.functionPlanId.value]"
+          },
+          "storageAccountName": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'storageAccount'), '2025-04-01').outputs.storageAccountName.value]"
+          },
+          "workerRuntime": {
+            "value": "[parameters('functionsWorkerRuntime')]"
+          },
+          "applicationInsightsConnectionString": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'applicationInsights'), '2025-04-01').outputs.connectionString.value]"
+          },
+          "keyVaultUri": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'keyVault'), '2025-04-01').outputs.vaultUri.value]"
+          },
+          "serviceBusNamespaceName": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'serviceBus'), '2025-04-01').outputs.namespaceName.value]"
+          },
+          "primaryQueueName": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'serviceBus'), '2025-04-01').outputs.ingressQueueName.value]"
+          },
+          "appRole": {
+            "value": "receiver"
+          },
+          "extraAppSettings": {
+            "value": [
+              {
+                "name": "IDEMPOTENCY_TABLE_NAME",
+                "value": "[reference(resourceId('Microsoft.Resources/deployments', 'tableStorage'), '2025-04-01').outputs.tableName.value]"
+              },
+              {
+                "name": "RAW_PAYLOAD_CONTAINER",
+                "value": "backlog-webhook-raw"
+              }
+            ]
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.1.21952",
+              "templateHash": "14795885282078780757"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for the Function App."
+              }
+            },
+            "functionAppName": {
+              "type": "string",
+              "metadata": {
+                "description": "Function App name."
+              }
+            },
+            "appServicePlanId": {
+              "type": "string",
+              "metadata": {
+                "description": "App Service plan resource ID."
+              }
+            },
+            "storageAccountName": {
+              "type": "string",
+              "metadata": {
+                "description": "Storage account name used by the Function App."
+              }
+            },
+            "workerRuntime": {
+              "type": "string",
+              "metadata": {
+                "description": "Functions worker runtime."
+              }
+            },
+            "applicationInsightsConnectionString": {
+              "type": "string",
+              "metadata": {
+                "description": "Application Insights connection string."
+              }
+            },
+            "keyVaultUri": {
+              "type": "string",
+              "metadata": {
+                "description": "Key Vault URI."
+              }
+            },
+            "serviceBusNamespaceName": {
+              "type": "string",
+              "metadata": {
+                "description": "Service Bus namespace name."
+              }
+            },
+            "primaryQueueName": {
+              "type": "string",
+              "metadata": {
+                "description": "Primary queue name."
+              }
+            },
+            "appRole": {
+              "type": "string",
+              "metadata": {
+                "description": "Role of the Function App in the architecture."
+              }
+            },
+            "extraAppSettings": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "Additional app settings."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Web/sites",
+              "apiVersion": "2023-12-01",
+              "name": "[parameters('functionAppName')]",
+              "location": "[parameters('location')]",
+              "kind": "functionapp",
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "properties": {
+                "serverFarmId": "[parameters('appServicePlanId')]",
+                "httpsOnly": true,
+                "siteConfig": {
+                  "appSettings": "[concat(createArray(createObject('name', 'AzureWebJobsStorage', 'value', format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix={2}', parameters('storageAccountName'), listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2023-05-01').keys[0].value, environment().suffixes.storage)), createObject('name', 'FUNCTIONS_EXTENSION_VERSION', 'value', '~4'), createObject('name', 'FUNCTIONS_WORKER_RUNTIME', 'value', parameters('workerRuntime')), createObject('name', 'APPINSIGHTS_CONNECTION_STRING', 'value', parameters('applicationInsightsConnectionString')), createObject('name', 'APPLICATIONINSIGHTS_CONNECTION_STRING', 'value', parameters('applicationInsightsConnectionString')), createObject('name', 'KEY_VAULT_URI', 'value', parameters('keyVaultUri')), createObject('name', 'SERVICE_BUS_NAMESPACE', 'value', parameters('serviceBusNamespaceName')), createObject('name', 'PRIMARY_QUEUE_NAME', 'value', parameters('primaryQueueName')), createObject('name', 'APP_ROLE', 'value', parameters('appRole'))), parameters('extraAppSettings'))]",
+                  "ftpsState": "Disabled",
+                  "minTlsVersion": "1.2"
+                }
+              }
+            }
+          ],
+          "outputs": {
+            "functionAppId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]"
+            },
+            "functionAppName": {
+              "type": "string",
+              "value": "[parameters('functionAppName')]"
+            },
+            "defaultHostName": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Web/sites', parameters('functionAppName')), '2023-12-01').defaultHostName]"
+            },
+            "principalId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Web/sites', parameters('functionAppName')), '2023-12-01', 'full').identity.principalId]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'applicationInsights')]",
+        "[resourceId('Microsoft.Resources/deployments', 'functionPlan')]",
+        "[resourceId('Microsoft.Resources/deployments', 'keyVault')]",
+        "[resourceId('Microsoft.Resources/deployments', 'serviceBus')]",
+        "[resourceId('Microsoft.Resources/deployments', 'storageAccount')]",
+        "[resourceId('Microsoft.Resources/deployments', 'tableStorage')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "workerFunctionApp",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "functionAppName": {
+            "value": "[variables('workerFunctionAppName')]"
+          },
+          "appServicePlanId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'functionPlan'), '2025-04-01').outputs.functionPlanId.value]"
+          },
+          "storageAccountName": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'storageAccount'), '2025-04-01').outputs.storageAccountName.value]"
+          },
+          "workerRuntime": {
+            "value": "[parameters('functionsWorkerRuntime')]"
+          },
+          "applicationInsightsConnectionString": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'applicationInsights'), '2025-04-01').outputs.connectionString.value]"
+          },
+          "keyVaultUri": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'keyVault'), '2025-04-01').outputs.vaultUri.value]"
+          },
+          "serviceBusNamespaceName": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'serviceBus'), '2025-04-01').outputs.namespaceName.value]"
+          },
+          "primaryQueueName": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'serviceBus'), '2025-04-01').outputs.ingressQueueName.value]"
+          },
+          "appRole": {
+            "value": "worker"
+          },
+          "extraAppSettings": {
+            "value": [
+              {
+                "name": "IDEMPOTENCY_TABLE_NAME",
+                "value": "[reference(resourceId('Microsoft.Resources/deployments', 'tableStorage'), '2025-04-01').outputs.tableName.value]"
+              },
+              {
+                "name": "RESULTS_CONTAINER",
+                "value": "backlog-agent-results"
+              },
+              {
+                "name": "DLQ_CONTAINER",
+                "value": "backlog-agent-dlq"
+              },
+              {
+                "name": "ACTIONS_QUEUE_NAME",
+                "value": "[reference(resourceId('Microsoft.Resources/deployments', 'serviceBus'), '2025-04-01').outputs.actionsQueueName.value]"
+              }
+            ]
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.1.21952",
+              "templateHash": "14795885282078780757"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for the Function App."
+              }
+            },
+            "functionAppName": {
+              "type": "string",
+              "metadata": {
+                "description": "Function App name."
+              }
+            },
+            "appServicePlanId": {
+              "type": "string",
+              "metadata": {
+                "description": "App Service plan resource ID."
+              }
+            },
+            "storageAccountName": {
+              "type": "string",
+              "metadata": {
+                "description": "Storage account name used by the Function App."
+              }
+            },
+            "workerRuntime": {
+              "type": "string",
+              "metadata": {
+                "description": "Functions worker runtime."
+              }
+            },
+            "applicationInsightsConnectionString": {
+              "type": "string",
+              "metadata": {
+                "description": "Application Insights connection string."
+              }
+            },
+            "keyVaultUri": {
+              "type": "string",
+              "metadata": {
+                "description": "Key Vault URI."
+              }
+            },
+            "serviceBusNamespaceName": {
+              "type": "string",
+              "metadata": {
+                "description": "Service Bus namespace name."
+              }
+            },
+            "primaryQueueName": {
+              "type": "string",
+              "metadata": {
+                "description": "Primary queue name."
+              }
+            },
+            "appRole": {
+              "type": "string",
+              "metadata": {
+                "description": "Role of the Function App in the architecture."
+              }
+            },
+            "extraAppSettings": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "Additional app settings."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Web/sites",
+              "apiVersion": "2023-12-01",
+              "name": "[parameters('functionAppName')]",
+              "location": "[parameters('location')]",
+              "kind": "functionapp",
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "properties": {
+                "serverFarmId": "[parameters('appServicePlanId')]",
+                "httpsOnly": true,
+                "siteConfig": {
+                  "appSettings": "[concat(createArray(createObject('name', 'AzureWebJobsStorage', 'value', format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix={2}', parameters('storageAccountName'), listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2023-05-01').keys[0].value, environment().suffixes.storage)), createObject('name', 'FUNCTIONS_EXTENSION_VERSION', 'value', '~4'), createObject('name', 'FUNCTIONS_WORKER_RUNTIME', 'value', parameters('workerRuntime')), createObject('name', 'APPINSIGHTS_CONNECTION_STRING', 'value', parameters('applicationInsightsConnectionString')), createObject('name', 'APPLICATIONINSIGHTS_CONNECTION_STRING', 'value', parameters('applicationInsightsConnectionString')), createObject('name', 'KEY_VAULT_URI', 'value', parameters('keyVaultUri')), createObject('name', 'SERVICE_BUS_NAMESPACE', 'value', parameters('serviceBusNamespaceName')), createObject('name', 'PRIMARY_QUEUE_NAME', 'value', parameters('primaryQueueName')), createObject('name', 'APP_ROLE', 'value', parameters('appRole'))), parameters('extraAppSettings'))]",
+                  "ftpsState": "Disabled",
+                  "minTlsVersion": "1.2"
+                }
+              }
+            }
+          ],
+          "outputs": {
+            "functionAppId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]"
+            },
+            "functionAppName": {
+              "type": "string",
+              "value": "[parameters('functionAppName')]"
+            },
+            "defaultHostName": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Web/sites', parameters('functionAppName')), '2023-12-01').defaultHostName]"
+            },
+            "principalId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Web/sites', parameters('functionAppName')), '2023-12-01', 'full').identity.principalId]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'applicationInsights')]",
+        "[resourceId('Microsoft.Resources/deployments', 'functionPlan')]",
+        "[resourceId('Microsoft.Resources/deployments', 'keyVault')]",
+        "[resourceId('Microsoft.Resources/deployments', 'serviceBus')]",
+        "[resourceId('Microsoft.Resources/deployments', 'storageAccount')]",
+        "[resourceId('Microsoft.Resources/deployments', 'tableStorage')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "frontDoor",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "frontDoorProfileName": {
+            "value": "[variables('frontDoorProfileName')]"
+          },
+          "frontDoorEndpointName": {
+            "value": "[variables('frontDoorEndpointName')]"
+          },
+          "frontDoorOriginGroupName": {
+            "value": "[variables('frontDoorOriginGroupName')]"
+          },
+          "frontDoorOriginName": {
+            "value": "[variables('frontDoorOriginName')]"
+          },
+          "frontDoorRouteName": {
+            "value": "[variables('frontDoorRouteName')]"
+          },
+          "originHostName": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'receiverFunctionApp'), '2025-04-01').outputs.defaultHostName.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.43.1.21952",
+              "templateHash": "5451282712726334787"
+            }
+          },
+          "parameters": {
+            "frontDoorProfileName": {
+              "type": "string",
+              "metadata": {
+                "description": "Front Door profile name."
+              }
+            },
+            "frontDoorEndpointName": {
+              "type": "string",
+              "metadata": {
+                "description": "Front Door endpoint name."
+              }
+            },
+            "frontDoorOriginGroupName": {
+              "type": "string",
+              "metadata": {
+                "description": "Front Door origin group name."
+              }
+            },
+            "frontDoorOriginName": {
+              "type": "string",
+              "metadata": {
+                "description": "Front Door origin name."
+              }
+            },
+            "frontDoorRouteName": {
+              "type": "string",
+              "metadata": {
+                "description": "Front Door route name."
+              }
+            },
+            "originHostName": {
+              "type": "string",
+              "metadata": {
+                "description": "Origin host name for the receiver Function App."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Cdn/profiles",
+              "apiVersion": "2024-02-01",
+              "name": "[parameters('frontDoorProfileName')]",
+              "location": "global",
+              "sku": {
+                "name": "Standard_AzureFrontDoor"
+              }
+            },
+            {
+              "type": "Microsoft.Cdn/profiles/afdEndpoints",
+              "apiVersion": "2024-02-01",
+              "name": "[format('{0}/{1}', parameters('frontDoorProfileName'), parameters('frontDoorEndpointName'))]",
+              "location": "global",
+              "properties": {
+                "enabledState": "Enabled"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Cdn/profiles', parameters('frontDoorProfileName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Cdn/profiles/originGroups",
+              "apiVersion": "2024-02-01",
+              "name": "[format('{0}/{1}', parameters('frontDoorProfileName'), parameters('frontDoorOriginGroupName'))]",
+              "properties": {
+                "healthProbeSettings": {
+                  "probePath": "/api/health",
+                  "probeProtocol": "Https",
+                  "probeRequestType": "GET",
+                  "probeIntervalInSeconds": 120
+                },
+                "loadBalancingSettings": {
+                  "sampleSize": 4,
+                  "successfulSamplesRequired": 3,
+                  "additionalLatencyInMilliseconds": 50
+                },
+                "sessionAffinityState": "Disabled"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Cdn/profiles', parameters('frontDoorProfileName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Cdn/profiles/originGroups/origins",
+              "apiVersion": "2024-02-01",
+              "name": "[format('{0}/{1}/{2}', parameters('frontDoorProfileName'), parameters('frontDoorOriginGroupName'), parameters('frontDoorOriginName'))]",
+              "properties": {
+                "enabledState": "Enabled",
+                "hostName": "[parameters('originHostName')]",
+                "httpPort": 80,
+                "httpsPort": 443,
+                "originHostHeader": "[parameters('originHostName')]",
+                "priority": 1,
+                "weight": 1000,
+                "enforceCertificateNameCheck": true
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Cdn/profiles/originGroups', parameters('frontDoorProfileName'), parameters('frontDoorOriginGroupName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Cdn/profiles/afdEndpoints/routes",
+              "apiVersion": "2024-02-01",
+              "name": "[format('{0}/{1}/{2}', parameters('frontDoorProfileName'), parameters('frontDoorEndpointName'), parameters('frontDoorRouteName'))]",
+              "properties": {
+                "enabledState": "Enabled",
+                "forwardingProtocol": "HttpsOnly",
+                "httpsRedirect": "Enabled",
+                "linkToDefaultDomain": "Enabled",
+                "originGroup": {
+                  "id": "[resourceId('Microsoft.Cdn/profiles/originGroups', parameters('frontDoorProfileName'), parameters('frontDoorOriginGroupName'))]"
+                },
+                "patternsToMatch": [
+                  "/api/*"
+                ],
+                "supportedProtocols": [
+                  "Http",
+                  "Https"
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Cdn/profiles/afdEndpoints', parameters('frontDoorProfileName'), parameters('frontDoorEndpointName'))]",
+                "[resourceId('Microsoft.Cdn/profiles/originGroups', parameters('frontDoorProfileName'), parameters('frontDoorOriginGroupName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "profileId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Cdn/profiles', parameters('frontDoorProfileName'))]"
+            },
+            "endpointHostName": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Cdn/profiles/afdEndpoints', parameters('frontDoorProfileName'), parameters('frontDoorEndpointName')), '2024-02-01').hostName]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'receiverFunctionApp')]"
+      ]
+    }
+  ],
+  "outputs": {
+    "storageAccountId": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'storageAccount'), '2025-04-01').outputs.storageAccountId.value]"
+    },
+    "storageAccountNameOut": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'storageAccount'), '2025-04-01').outputs.storageAccountName.value]"
+    },
+    "tableNameOut": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'tableStorage'), '2025-04-01').outputs.tableName.value]"
+    },
+    "tableEndpoint": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'tableStorage'), '2025-04-01').outputs.tableEndpoint.value]"
+    },
+    "blobEndpoint": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'blobContainers'), '2025-04-01').outputs.blobEndpoint.value]"
+    },
+    "applicationInsightsConnectionString": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'applicationInsights'), '2025-04-01').outputs.connectionString.value]"
+    },
+    "keyVaultUri": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'keyVault'), '2025-04-01').outputs.vaultUri.value]"
+    },
+    "serviceBusNamespaceNameOut": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'serviceBus'), '2025-04-01').outputs.namespaceName.value]"
+    },
+    "ingressQueueNameOut": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'serviceBus'), '2025-04-01').outputs.ingressQueueName.value]"
+    },
+    "actionsQueueNameOut": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'serviceBus'), '2025-04-01').outputs.actionsQueueName.value]"
+    },
+    "applicationInsightsNameOut": {
+      "type": "string",
+      "value": "[variables('applicationInsightsName')]"
+    },
+    "keyVaultNameOut": {
+      "type": "string",
+      "value": "[variables('keyVaultName')]"
+    },
+    "functionPlanNameOut": {
+      "type": "string",
+      "value": "[variables('functionPlanName')]"
+    },
+    "receiverFunctionAppNameOut": {
+      "type": "string",
+      "value": "[variables('receiverFunctionAppName')]"
+    },
+    "workerFunctionAppNameOut": {
+      "type": "string",
+      "value": "[variables('workerFunctionAppName')]"
+    },
+    "frontDoorProfileNameOut": {
+      "type": "string",
+      "value": "[variables('frontDoorProfileName')]"
+    },
+    "frontDoorEndpointNameOut": {
+      "type": "string",
+      "value": "[variables('frontDoorEndpointName')]"
+    },
+    "receiverFunctionDefaultHostName": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'receiverFunctionApp'), '2025-04-01').outputs.defaultHostName.value]"
+    },
+    "workerFunctionDefaultHostName": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'workerFunctionApp'), '2025-04-01').outputs.defaultHostName.value]"
+    },
+    "frontDoorEndpointHostName": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'frontDoor'), '2025-04-01').outputs.endpointHostName.value]"
+    }
+  }
+}
