@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build 2026 の C# アップデートまとめ</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --surface-muted: #f0f4fa;
+            --text: #1b1f24;
+            --muted: #5a6472;
+            --border: #d7deea;
+            --accent: #0f6cbd;
+            --accent-strong: #084b91;
+            --code-bg: #eef3f9;
+            --shadow: 0 20px 40px rgba(15, 108, 189, 0.08);
+        }
+
+        html.dark-mode {
+            color-scheme: dark;
+            --bg: #0f1722;
+            --surface: #182230;
+            --surface-muted: #111a26;
+            --text: #e8eef7;
+            --muted: #aab7c8;
+            --border: #2a3a4f;
+            --accent: #7cc2ff;
+            --accent-strong: #a7d7ff;
+            --code-bg: #0f1a28;
+            --shadow: 0 24px 48px rgba(0, 0, 0, 0.32);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+            background: linear-gradient(180deg, var(--surface-muted) 0%, var(--bg) 180px);
+            color: var(--text);
+            line-height: 1.75;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 10;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            border-radius: 999px;
+            padding: 10px 14px;
+            font: inherit;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+        }
+
+        .page {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 72px 20px 40px;
+        }
+
+        .hero {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            margin: 0;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            line-height: 1.2;
+            color: var(--accent);
+        }
+
+        .hero p {
+            margin: 12px 0 0;
+            color: var(--muted);
+        }
+
+        .content {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+            overflow-wrap: anywhere;
+        }
+
+        .content > h1:first-child {
+            display: none;
+        }
+
+        .content h2,
+        .content h3,
+        .content h4 {
+            scroll-margin-top: 88px;
+        }
+
+        .content h2 {
+            margin: 2.25rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+            color: var(--accent);
+            font-size: clamp(1.45rem, 2.4vw, 1.8rem);
+        }
+
+        .content h3 {
+            margin: 1.75rem 0 0.75rem;
+            color: var(--text);
+            font-size: clamp(1.15rem, 2vw, 1.35rem);
+        }
+
+        .content p,
+        .content ul,
+        .content ol,
+        .content table {
+            margin: 1rem 0;
+        }
+
+        .content ul,
+        .content ol {
+            padding-left: 1.4rem;
+        }
+
+        .content li + li {
+            margin-top: 0.45rem;
+        }
+
+        .content a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .content a:hover {
+            color: var(--accent-strong);
+            text-decoration: underline;
+        }
+
+        .content strong {
+            color: var(--accent);
+        }
+
+        .content code {
+            background: var(--code-bg);
+            border-radius: 8px;
+            padding: 0.15em 0.45em;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 0.92em;
+        }
+
+        .content pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            overflow-x: auto;
+        }
+
+        .content pre code {
+            background: transparent;
+            padding: 0;
+        }
+
+        .content table {
+            width: 100%;
+            display: block;
+            overflow-x: auto;
+            border-collapse: collapse;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: var(--surface);
+        }
+
+        .content th,
+        .content td {
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            text-align: left;
+            vertical-align: top;
+            white-space: nowrap;
+        }
+
+        .content th {
+            background: var(--surface-muted);
+            color: var(--accent);
+        }
+
+        .content blockquote {
+            margin: 1rem 0;
+            padding: 0.75rem 1rem;
+            border-left: 4px solid var(--accent);
+            background: var(--surface-muted);
+            color: var(--muted);
+            border-radius: 0 12px 12px 0;
+        }
+
+        @media (max-width: 720px) {
+            .page {
+                padding: 84px 14px 24px;
+            }
+
+            .hero,
+            .content {
+                padding: 20px;
+                border-radius: 18px;
+            }
+
+            .theme-toggle {
+                top: 12px;
+                right: 12px;
+                padding: 9px 12px;
+            }
+
+            .content th,
+            .content td {
+                white-space: normal;
+                min-width: 140px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" type="button" aria-label="テーマ切り替え" onclick="toggleTheme()">🌙 ダーク</button>
+    <div class="page">
+        <header class="hero">
+            <h1>Build 2026 の C# アップデートまとめ</h1>
+            <p>Markdown をもとに整形した HTML 版です。ライトテーマが既定で、右上のボタンからダークテーマに切り替えられます。</p>
+        </header>
+        <main class="content">
+<h1 id="build-2026-c">Build 2026 の C# アップデートまとめ</h1>
+<p>Microsoft Build 2026 で C# 開発者がまず押さえるべき変化は、<strong>C# 15 プレビュー + .NET 11 プレビュー + Visual Studio 2026 の AI 強化</strong>です。安定版で今すぐ使うなら <strong>C# 14 / .NET 10</strong>、次世代の方向性を見るなら <strong>C# 15 / .NET 11</strong> が中心です。</p>
+<h2 id="c">1. C# 言語そのもの</h2>
+<h3 id="c-14">いまの安定版: C# 14</h3>
+<p>C# 14 は .NET 10 で正式サポートされており、次の機能が入っています。</p>
+<ul>
+<li>Extension members</li>
+<li>null-conditional assignment</li>
+<li><code>nameof(List&lt;&gt;)</code> のような unbound generic types 対応</li>
+<li><code>Span&lt;T&gt;</code> / <code>ReadOnlySpan&lt;T&gt;</code> の暗黙変換強化</li>
+<li>simple lambda parameter modifiers</li>
+<li><code>field</code> backed properties</li>
+<li>partial events / partial constructors</li>
+<li>user-defined compound assignment operators</li>
+</ul>
+<p>特に実務で効きやすいのは、<strong><code>field</code> backed properties</strong> と <strong>null-conditional assignment</strong>、そして <strong>extension members</strong> です。既存コードを大きく崩さずに、C# の記述量と補助型の量を減らしやすくなります。</p>
+<h3 id="build-2026-c-15">Build 2026 で見るべき新顔: C# 15 プレビュー</h3>
+<p>C# 15 は <strong>.NET 11 preview</strong> と <strong>Visual Studio 2026 Insiders</strong> で試せます。現時点の目玉は次の 3 つです。</p>
+<ul>
+<li><strong>Collection expression arguments</strong>: <code>with(...)</code> でコレクション式から capacity や comparer を渡せる</li>
+<li><strong>Union types</strong>: 代数的データ型に近いモデルを素直に表現しやすい</li>
+<li><strong>Closed hierarchies</strong>: 継承階層を閉じて <code>switch</code> の網羅性を強化できる</li>
+</ul>
+<p>Build の C# 目線では、<strong>「C# が AI 向け API を増やした」よりも、「型モデリングとパターンマッチの表現力をかなり押し上げた」</strong> のが大きいです。特に API 契約、ワークフロー状態、ドメインイベントの表現がやりやすくなります。</p>
+<h2 id="net-11-c">2. .NET 11 で C# 開発体験がどう変わるか</h2>
+<h3 id="runtime-async">Runtime Async</h3>
+<p>.NET 11 では <strong>Runtime Async</strong> が大きな変化です。コンパイラ生成の async state machine 依存を減らし、ランタイム管理へ寄せる方向で進んでいます。</p>
+<ul>
+<li>ライブスタックトレースがかなり見やすくなる</li>
+<li>デバッグ時に async のノイズが減る</li>
+<li>NativeAOT / ReadyToRun でも扱いやすい</li>
+<li>async-heavy なコードでオーバーヘッド低減が狙える</li>
+</ul>
+<p>async を多用する C# アプリ、特に ASP.NET Core やクラウド API では影響が大きい変更です。</p>
+<h3 id="jit-aot">JIT / AOT / 実行性能</h3>
+<p>.NET 11 runtime では次も注目です。</p>
+<ul>
+<li>bounds check 除去の強化</li>
+<li>checked context の冗長除去</li>
+<li><code>SequenceEqual</code> などの定数畳み込み強化</li>
+<li>ReadyToRun の改善</li>
+<li>WebAssembly / NativeAOT / Arm 系の最適化強化</li>
+</ul>
+<p>一方で、<strong>最小ハードウェア要件が引き上げ</strong> られているため、古い x64 / Arm64 環境をまだ抱えている場合は Build 後に確認が必要です。</p>
+<h2 id="asp.net-core-blazor">3. ASP.NET Core / Blazor で効く更新</h2>
+<p>Build の C# Web 開発者向けとしては、.NET 11 の ASP.NET Core も当たり年です。</p>
+<h3 id="blazor">Blazor</h3>
+<ul>
+<li><code>DisplayName</code> コンポーネント追加</li>
+<li>Blazor Server / WebAssembly の startup options 形式がそろう</li>
+<li><strong>新しい Blazor WebAssembly 開発サーバー</strong> (<code>Microsoft.AspNetCore.Components.Gateway</code>)</li>
+<li><strong><code>IHostedService</code> が Blazor WebAssembly で利用可能</strong></li>
+<li>Static SSR でクライアント側バリデーション対応</li>
+<li>async form validation の基盤追加</li>
+</ul>
+<h3 id="web-api-minimal-apis-openapi">Web API / Minimal APIs / OpenAPI</h3>
+<ul>
+<li><strong>Blazor と Minimal APIs のエラーローカライズを強化</strong></li>
+<li><strong>OpenAPI 3.2 対応</strong></li>
+<li>バイナリレスポンスの OpenAPI 生成改善</li>
+<li>HTTP QUERY の OpenAPI 表現に対応</li>
+<li>OpenTelemetry の追加計装ライブラリなしでも一部 semantic convention 属性を直接出力</li>
+</ul>
+<p>要するに、Build 2026 の ASP.NET Core は <strong>「AI を載せる土台」だけでなく、Blazor と API の実務機能もかなり前進</strong> しています。</p>
+<h2 id="visual-studio-2026-copilot-c">4. Visual Studio 2026 と Copilot が C# 開発に与える変化</h2>
+<p>Visual Studio 2026 の更新は、C# 開発者にはかなり直接的です。</p>
+<h3 id="section">デバッグ / テスト / 性能解析</h3>
+<ul>
+<li><strong>Smart Watch Suggestions</strong>: Watch window で文脈に応じた式候補</li>
+<li><strong>Profile Tests with Copilot</strong>: Test Explorer から .NET テストをそのままプロファイル</li>
+<li><strong>Perf Tips powered by live profiling</strong>: デバッグしながら実行時間やホットスポットを見て、その場で Copilot に最適化相談</li>
+</ul>
+<h3 id="copilot">Copilot ワークフロー</h3>
+<ul>
+<li><strong>Long-distance next edit suggestions</strong></li>
+<li><strong>MCP trust validation</strong></li>
+<li><strong>PR を Copilot Chat に直接追加</strong></li>
+<li><strong>Agent Skills の一覧管理</strong></li>
+<li><strong>Multi-file summary diff</strong></li>
+<li><strong>Planning mode</strong></li>
+</ul>
+<p>Build 2026 の C# 体験は、単なるコード補完より <strong>「診断・修正・レビューまで Copilot が IDE に深く入ってきた」</strong> ことが新しいポイントです。</p>
+<h2 id="c-1">5. C# 開発者向けの注目セッション</h2>
+<h3 id="section-1">直接おすすめ</h3>
+<table>
+<thead>
+<tr>
+<th>セッション</th>
+<th>形式</th>
+<th>なぜ見るべきか</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>OD802</strong> — Building for the agentic web with .NET 11</td>
+<td>Pre-recorded</td>
+<td>ASP.NET Core / Blazor / Aspire / agentic web をまとめて追える</td>
+</tr>
+<tr>
+<td><strong>OD806</strong> — .NET 11 in depth: Runtime, libraries, and SDK for the AI era</td>
+<td>Pre-recorded</td>
+<td>.NET 11 全体の技術的な芯を把握しやすい</td>
+</tr>
+<tr>
+<td><strong>BRK207</strong> — GitHub Copilot in Visual Studio: Agents That Debug, Profile, and Test</td>
+<td>Breakout</td>
+<td>C# / .NET 開発でのデバッグ・性能解析・テスト支援が直結</td>
+</tr>
+<tr>
+<td><strong>OD805</strong> — AI Building Blocks for .NET: Add intelligence to your C# apps</td>
+<td>Pre-recorded</td>
+<td>C# アプリに AI をどう組み込むかの実践寄り</td>
+</tr>
+<tr>
+<td><strong>OD803</strong> — Taking your AI to the edge with .NET MAUI</td>
+<td>Pre-recorded</td>
+<td>C# / MAUI でローカル AI・エッジ AI を追うなら最短</td>
+</tr>
+<tr>
+<td><strong>OD804</strong> — Simplifying .NET Installs with dotnetup</td>
+<td>Pre-recorded</td>
+<td>SDK / Runtime 管理の運用面を改善したいなら有用</td>
+</tr>
+</tbody>
+</table>
+<h3 id="section-2">現地参加なら</h3>
+<table>
+<thead>
+<tr>
+<th>セッション</th>
+<th>時間</th>
+<th>メモ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>BRK207</strong></td>
+<td>Jun 3, 4:00 PM PDT</td>
+<td>C# / .NET 向けに一番実務直結</td>
+</tr>
+<tr>
+<td><strong>LTG406</strong> — Get More Than Autocomplete: GitHub Copilot Workflows in Visual Studio</td>
+<td>Jun 2, 4:10 PM PDT</td>
+<td>Visual Studio の日常フロー寄り</td>
+</tr>
+<tr>
+<td><strong>DEMSP394</strong> — Scale enterprise .NET apps with AI-assisted cross-platform workflows</td>
+<td>Jun 2, 2:40 PM PDT</td>
+<td>エンタープライズ .NET と AI ワークフロー</td>
+</tr>
+<tr>
+<td><strong>TT656</strong> — From Locked-In to Liquid: Modernizing .NET Before the November 2026 EOL</td>
+<td>Jun 2, 3:15 PM PDT</td>
+<td>.NET 8/9 EOL を見据えた移行の話</td>
+</tr>
+</tbody>
+</table>
+<h2 id="c-2">6. C# 開発者としての実務インパクト</h2>
+<h3 id="section-3">すぐ使うなら</h3>
+<ol>
+<li><strong>C# 14 / .NET 10 / Visual Studio 2026</strong> を前提に、<code>field</code> backed properties、null-conditional assignment、extension members を押さえる</li>
+<li>Visual Studio の <strong>Watch / profiling / Copilot diff / planning</strong> をチーム開発フローに入れる</li>
+<li>Blazor / Minimal APIs を使っているなら .NET 11 の差分を先に読む</li>
+</ol>
+<h3 id="section-4">次を見据えるなら</h3>
+<ol>
+<li><strong>C# 15 の union types と closed hierarchies</strong> をドメインモデルで試す</li>
+<li><strong>Runtime Async</strong> を async-heavy な API やサービスで検証する</li>
+<li><strong>OD802 / OD806 / BRK207</strong> を見て、Web・ランタイム・IDE の 3 面で Build 2026 を把握する</li>
+</ol>
+<h2 id="section-5">参照元</h2>
+<ul>
+<li>C# 14: <a href="https://learn.microsoft.com/dotnet/csharp/whats-new/csharp-14">https://learn.microsoft.com/dotnet/csharp/whats-new/csharp-14</a></li>
+<li>C# 15: <a href="https://learn.microsoft.com/dotnet/csharp/whats-new/csharp-15">https://learn.microsoft.com/dotnet/csharp/whats-new/csharp-15</a></li>
+<li>.NET 11 runtime: <a href="https://learn.microsoft.com/dotnet/core/whats-new/dotnet-11/runtime">https://learn.microsoft.com/dotnet/core/whats-new/dotnet-11/runtime</a></li>
+<li>ASP.NET Core in .NET 11: <a href="https://learn.microsoft.com/aspnet/core/release-notes/aspnetcore-11">https://learn.microsoft.com/aspnet/core/release-notes/aspnetcore-11</a></li>
+<li>Visual Studio 2026 release notes: <a href="https://learn.microsoft.com/visualstudio/releases/2026/release-notes">https://learn.microsoft.com/visualstudio/releases/2026/release-notes</a></li>
+<li>Build 2026 news: <a href="https://aka.ms/build2026-news">https://aka.ms/build2026-news</a></li>
+<li>Build 2026 session catalog: <a href="https://aka.ms/build2026-session-info">https://aka.ms/build2026-session-info</a></li>
+</ul>
+
+        </main>
+    </div>
+    <script>
+        const root = document.documentElement;
+        const button = document.querySelector('.theme-toggle');
+
+        function setTheme(theme) {
+            const dark = theme === 'dark';
+            root.classList.toggle('dark-mode', dark);
+            button.textContent = dark ? '☀️ ライト' : '🌙 ダーク';
+            localStorage.setItem('preferred-theme', theme);
+        }
+
+        function toggleTheme() {
+            setTheme(root.classList.contains('dark-mode') ? 'light' : 'dark');
+        }
+
+        const savedTheme = localStorage.getItem('preferred-theme');
+        setTheme(savedTheme === 'dark' ? 'dark' : 'light');
+    </script>
+</body>
+</html>
