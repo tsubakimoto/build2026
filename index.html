@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build 2026 コンテンツ一覧</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --surface-muted: #eef3f9;
+            --text: #1b1f24;
+            --muted: #5a6472;
+            --border: #d7deea;
+            --accent: #0f6cbd;
+            --accent-strong: #084b91;
+            --shadow: 0 18px 36px rgba(15, 108, 189, 0.08);
+        }
+
+        html.dark-mode {
+            color-scheme: dark;
+            --bg: #0f1722;
+            --surface: #182230;
+            --surface-muted: #111a26;
+            --text: #e8eef7;
+            --muted: #aab7c8;
+            --border: #2a3a4f;
+            --accent: #7cc2ff;
+            --accent-strong: #a7d7ff;
+            --shadow: 0 24px 48px rgba(0, 0, 0, 0.32);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+            color: var(--text);
+            background: linear-gradient(180deg, var(--surface-muted) 0%, var(--bg) 220px);
+            line-height: 1.7;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 10;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            border-radius: 999px;
+            padding: 10px 14px;
+            font: inherit;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+        }
+
+        .page {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 72px 20px 40px;
+        }
+
+        .hero {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 12px;
+            color: var(--accent);
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            font-size: 0.82rem;
+        }
+
+        h1 {
+            margin: 0 0 12px;
+            font-size: clamp(2rem, 4vw, 3rem);
+            line-height: 1.2;
+        }
+
+        .hero p {
+            margin: 0;
+            color: var(--muted);
+            max-width: 760px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 18px;
+        }
+
+        .card {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: var(--shadow);
+        }
+
+        .card h2 {
+            margin: 0;
+            font-size: 1.2rem;
+            line-height: 1.4;
+        }
+
+        .card p {
+            margin: 0;
+            color: var(--muted);
+            flex: 1;
+        }
+
+        .meta {
+            font-size: 0.92rem;
+            color: var(--muted);
+        }
+
+        .card a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+            min-height: 44px;
+            padding: 10px 16px;
+            border-radius: 999px;
+            text-decoration: none;
+            color: #ffffff;
+            background: var(--accent);
+            font-weight: 700;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .card a:hover,
+        .card a:focus-visible {
+            background: var(--accent-strong);
+            transform: translateY(-1px);
+        }
+
+        .note {
+            margin-top: 24px;
+            padding: 18px 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            color: var(--muted);
+            box-shadow: var(--shadow);
+        }
+
+        code {
+            padding: 0.15em 0.45em;
+            border-radius: 0.5em;
+            background: var(--surface-muted);
+            color: var(--text);
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 0.95em;
+        }
+
+        @media (max-width: 640px) {
+            .page {
+                padding-top: 84px;
+            }
+
+            .hero,
+            .card,
+            .note {
+                padding: 20px;
+            }
+
+            .theme-toggle {
+                top: 12px;
+                right: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="テーマ切り替え">ダークモード</button>
+    <main class="page">
+        <section class="hero">
+            <span class="eyebrow">Microsoft Build 2026</span>
+            <h1>公開ページ一覧</h1>
+            <p>GitHub Pages のルート <code>/index.html</code> から、作成済みの各 HTML に直接アクセスできるようにまとめています。既定はライトテーマで、必要に応じてダークテーマへ切り替えられます。</p>
+        </section>
+
+        <section class="grid" aria-label="公開ページ一覧">
+            <article class="card">
+                <div class="meta">session-catalog</div>
+                <h2>Build 2026 セッションカタログ</h2>
+                <p>トピック別に Build 2026 セッションを整理した総合カタログです。</p>
+                <a href="./session-catalog/build2026-session-catalog-by-topic.html">ページを開く</a>
+            </article>
+
+            <article class="card">
+                <div class="meta">microsoft-scout</div>
+                <h2>Microsoft Scout まとめ</h2>
+                <p>Microsoft Scout に関する Build 2026 の情報をまとめたページです。</p>
+                <a href="./microsoft-scout/microsoft-scout-summary.html">ページを開く</a>
+            </article>
+
+            <article class="card">
+                <div class="meta">copilot-token</div>
+                <h2>GitHub Copilot のトークン削減関連セッション</h2>
+                <p>Build 2026 の中から、Copilot のトークン最適化に関係するセッションをまとめています。</p>
+                <a href="./copilot-token/build2026-github-copilot-token-optimization-sessions.html">ページを開く</a>
+            </article>
+
+            <article class="card">
+                <div class="meta">csharp</div>
+                <h2>Build 2026 の C# アップデートまとめ</h2>
+                <p>C# に関する主要アップデートを見やすく整理したまとめページです。</p>
+                <a href="./csharp/build2026-csharp-updates.html">ページを開く</a>
+            </article>
+
+            <article class="card">
+                <div class="meta">microsoft-foundry</div>
+                <h2>Microsoft Foundry の Build 2026 新機能まとめ</h2>
+                <p>Microsoft Foundry の新機能や注目ポイントを整理したページです。</p>
+                <a href="./microsoft-foundry/microsoft-foundry-build-2026-features.html">ページを開く</a>
+            </article>
+
+            <article class="card">
+                <div class="meta">microsoft-foundry/hosted-agents</div>
+                <h2>Microsoft Foundry Hosted Agents のアップデート</h2>
+                <p>Hosted Agents に関する Build 2026 のアップデートを個別に確認できます。</p>
+                <a href="./microsoft-foundry/hosted-agents/build2026-foundry-hosted-agents-updates.html">ページを開く</a>
+            </article>
+        </section>
+
+        <section class="note">
+            GitHub Pages では、このリポジトリを公開対象に設定するとルートの <code>index.html</code> がトップページとして使われます。各リンクは相対パスにしてあるため、そのまま公開しても辿れます。
+        </section>
+    </main>
+
+    <script>
+        (() => {
+            const root = document.documentElement;
+            const themeToggle = document.getElementById("themeToggle");
+            const storageKey = "build2026-theme";
+
+            const setTheme = (theme) => {
+                const isDark = theme === "dark";
+                root.classList.toggle("dark-mode", isDark);
+                themeToggle.textContent = isDark ? "ライトモード" : "ダークモード";
+                themeToggle.setAttribute("aria-pressed", String(isDark));
+            };
+
+            const savedTheme = localStorage.getItem(storageKey) || "light";
+            setTheme(savedTheme);
+
+            themeToggle.addEventListener("click", () => {
+                const nextTheme = root.classList.contains("dark-mode") ? "light" : "dark";
+                localStorage.setItem(storageKey, nextTheme);
+                setTheme(nextTheme);
+            });
+        })();
+    </script>
+</body>
+</html>
