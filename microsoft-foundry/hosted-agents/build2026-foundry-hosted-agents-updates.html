@@ -370,7 +370,7 @@
     </style>
 </head>
 <body>
-    <button class="theme-toggle" onclick="toggleTheme()">🌙 ダーク</button>
+    <button class="theme-toggle" onclick="toggleTheme()">🌙 ダークモード</button>
 
     <header>
         <h1>Build 2026 における Microsoft Foundry Hosted Agents のアップデートまとめ</h1>
@@ -840,13 +840,13 @@ var s_tracerProvider = OpenTelemetry
         function updateThemeButton() {
             const button = document.querySelector('.theme-toggle');
             const isDark = document.documentElement.classList.contains('dark-mode');
-            button.textContent = isDark ? '☀️ ライト' : '🌙 ダーク';
+            button.textContent = isDark ? '☀️ ライトモード' : '🌙 ダークモード';
         }
 
         // ページロード時にテーマを復元
         window.addEventListener('load', updateTheme);
 
-        // システムのダーク/ライトモード変更を検知
+        // システムのダークモード/ライトモード変更を検知
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
             if (localStorage.getItem('theme') === null) {
                 updateTheme();

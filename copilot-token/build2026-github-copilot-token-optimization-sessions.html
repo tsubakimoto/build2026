@@ -235,11 +235,11 @@
     </style>
 </head>
 <body>
-    <button class="theme-toggle" type="button" aria-label="テーマ切り替え" onclick="toggleTheme()">🌙 ダーク</button>
+    <button class="theme-toggle" type="button" aria-label="テーマ切り替え" onclick="toggleTheme()">🌙 ダークモード</button>
     <div class="page">
         <header class="hero">
             <h1>Build 2026 で GitHub Copilot のトークン削減に関係するセッション</h1>
-            <p>Markdown をもとに整形した HTML 版です。ライトテーマが既定で、右上のボタンからダークテーマに切り替えられます。</p>
+            <p>Markdown をもとに整形した HTML 版です。ライトモードが既定で、右上のボタンからダークモードに切り替えられます。</p>
         </header>
         <main class="content">
 <h1 id="build-2026-github-copilot">Build 2026 で GitHub Copilot のトークン削減に関係するセッション</h1>
@@ -366,7 +366,7 @@
         function setTheme(theme) {
             const dark = theme === 'dark';
             root.classList.toggle('dark-mode', dark);
-            button.textContent = dark ? '☀️ ライト' : '🌙 ダーク';
+            button.textContent = dark ? '☀️ ライトモード' : '🌙 ダークモード';
             localStorage.setItem('preferred-theme', theme);
         }
 

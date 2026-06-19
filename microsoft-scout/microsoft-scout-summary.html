@@ -381,7 +381,7 @@
             const savedTheme = localStorage.getItem('theme');
             const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             
-            // テーマの決定（保存済み > システム設定 > デフォルトはライト）
+            // テーマの決定（保存済み > システム設定 > デフォルトはライトモード）
             const shouldBeDark = savedTheme ? savedTheme === 'dark' : isDark;
             
             if (shouldBeDark) {
