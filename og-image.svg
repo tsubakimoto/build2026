@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Build 2026 コンテンツ一覧</title>
+  <desc id="desc">Microsoft Build 2026 の公開ページ一覧を表すOGP画像です。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#eef3f9" />
+      <stop offset="100%" stop-color="#f5f7fb" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f6cbd" />
+      <stop offset="100%" stop-color="#4aa3ff" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="#0f6cbd" flood-opacity="0.12" />
+    </filter>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <circle cx="1010" cy="120" r="180" fill="#dcecff" />
+  <circle cx="132" cy="548" r="140" fill="#e4f0ff" />
+
+  <g filter="url(#shadow)">
+    <rect x="76" y="74" width="1048" height="482" rx="32" fill="#ffffff" stroke="#d7deea" />
+    <rect x="76" y="74" width="1048" height="148" rx="32" fill="url(#accent)" />
+  </g>
+
+  <text x="128" y="136" font-family="'Segoe UI', 'Meiryo', sans-serif" font-size="28" font-weight="700" fill="#eaf4ff">Microsoft Build 2026</text>
+  <text x="128" y="206" font-family="'Segoe UI', 'Meiryo', sans-serif" font-size="60" font-weight="700" fill="#ffffff">Build 2026 コンテンツ一覧</text>
+  <text x="128" y="286" font-family="'Segoe UI', 'Meiryo', sans-serif" font-size="28" fill="#1b1f24">公開中の調査ページとセッションカタログをまとめたトップページ</text>
+
+  <g font-family="'Segoe UI', 'Meiryo', sans-serif">
+    <rect x="128" y="334" width="294" height="130" rx="24" fill="#f5f9ff" stroke="#d7deea" />
+    <text x="156" y="380" font-size="22" font-weight="700" fill="#0f6cbd">session-catalog</text>
+    <text x="156" y="418" font-size="30" font-weight="700" fill="#1b1f24">セッションカタログ</text>
+    <text x="156" y="450" font-size="21" fill="#5a6472">Build 2026 の主要セッションを整理</text>
+
+    <rect x="454" y="334" width="294" height="130" rx="24" fill="#f5f9ff" stroke="#d7deea" />
+    <text x="482" y="380" font-size="22" font-weight="700" fill="#0f6cbd">microsoft-scout</text>
+    <text x="482" y="418" font-size="30" font-weight="700" fill="#1b1f24">Scout / Copilot</text>
+    <text x="482" y="450" font-size="21" fill="#5a6472">注目トピック別のページへ移動</text>
+
+    <rect x="780" y="334" width="264" height="130" rx="24" fill="#f5f9ff" stroke="#d7deea" />
+    <text x="808" y="380" font-size="22" font-weight="700" fill="#0f6cbd">Foundry / C#</text>
+    <text x="808" y="418" font-size="30" font-weight="700" fill="#1b1f24">最新アップデート</text>
+    <text x="808" y="450" font-size="21" fill="#5a6472">トピック別のまとめを掲載</text>
+  </g>
+
+  <text x="128" y="522" font-family="'Segoe UI', 'Meiryo', sans-serif" font-size="22" fill="#5a6472">https://tsubakimoto.github.io/build2026/</text>
+</svg>
