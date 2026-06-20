@@ -5,236 +5,244 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Microsoft Scout まとめ</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         :root {
-            --bg-color: #ffffff;
-            --text-color: #1a1a1a;
-            --border-color: #e0e0e0;
-            --code-bg: #f5f5f5;
-            --heading-color: #0078d4;
-            --table-header-bg: #f0f0f0;
-            --table-border-color: #d0d0d0;
-            --link-color: #0078d4;
+            color-scheme: light;
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --surface-muted: #f0f4fa;
+            --text: #1b1f24;
+            --muted: #5a6472;
+            --border: #d7deea;
+            --accent: #0f6cbd;
+            --accent-strong: #084b91;
+            --code-bg: #eef3f9;
+            --shadow: 0 20px 40px rgba(15, 108, 189, 0.08);
         }
 
         html.dark-mode {
-            --bg-color: #1e1e1e;
-            --text-color: #e0e0e0;
-            --border-color: #404040;
-            --code-bg: #2d2d2d;
-            --heading-color: #58b5ff;
-            --table-header-bg: #2d2d2d;
-            --table-border-color: #505050;
-            --link-color: #58b5ff;
+            color-scheme: dark;
+            --bg: #0f1722;
+            --surface: #182230;
+            --surface-muted: #111a26;
+            --text: #e8eef7;
+            --muted: #aab7c8;
+            --border: #2a3a4f;
+            --accent: #7cc2ff;
+            --accent-strong: #a7d7ff;
+            --code-bg: #0f1a28;
+            --shadow: 0 24px 48px rgba(0, 0, 0, 0.32);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', Meiryo, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
+            margin: 0;
+            font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+            background: linear-gradient(180deg, var(--surface-muted) 0%, var(--bg) 180px);
+            color: var(--text);
+            line-height: 1.75;
+            transition: background-color 0.25s ease, color 0.25s ease;
         }
 
         .theme-toggle {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 10px 15px;
-            background-color: var(--heading-color);
-            color: white;
-            border: none;
-            border-radius: 6px;
+            top: 16px;
+            right: 16px;
+            z-index: 10;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            border-radius: 999px;
+            padding: 10px 14px;
+            font: inherit;
             cursor: pointer;
-            font-size: 14px;
-            z-index: 100;
+            box-shadow: var(--shadow);
         }
 
-        .theme-toggle:hover {
-            opacity: 0.8;
+        .page {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 72px 20px 40px;
         }
 
-        h1 {
-            color: var(--heading-color);
-            margin: 40px 0 20px 0;
-            font-size: 2em;
+        .hero {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
         }
 
-        h2 {
-            color: var(--heading-color);
-            margin: 30px 0 15px 0;
-            font-size: 1.5em;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 10px;
+        .hero h1 {
+            margin: 0;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            line-height: 1.2;
+            color: var(--accent);
         }
 
-        h3 {
-            color: var(--heading-color);
-            margin: 20px 0 10px 0;
-            font-size: 1.2em;
+        .hero p {
+            margin: 12px 0 0;
+            color: var(--muted);
         }
 
-        p {
-            margin: 15px 0;
-            text-align: justify;
+        .content {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+            overflow-wrap: anywhere;
         }
 
-        ul, ol {
-            margin: 15px 0 15px 30px;
+        .content > h1:first-child {
+            display: none;
         }
 
-        li {
-            margin: 8px 0;
+        .content h2,
+        .content h3,
+        .content h4 {
+            scroll-margin-top: 88px;
         }
 
-        a {
-            color: var(--link-color);
+        .content h2 {
+            margin: 2.25rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+            color: var(--accent);
+            font-size: clamp(1.45rem, 2.4vw, 1.8rem);
+        }
+
+        .content h3 {
+            margin: 1.75rem 0 0.75rem;
+            color: var(--text);
+            font-size: clamp(1.15rem, 2vw, 1.35rem);
+        }
+
+        .content p,
+        .content ul,
+        .content ol,
+        .content table {
+            margin: 1rem 0;
+        }
+
+        .content ul,
+        .content ol {
+            padding-left: 1.4rem;
+        }
+
+        .content li + li {
+            margin-top: 0.45rem;
+        }
+
+        .content a {
+            color: var(--accent);
             text-decoration: none;
-            border-bottom: 1px solid transparent;
-            transition: border-color 0.2s;
         }
 
-        a:hover {
-            border-bottom-color: var(--link-color);
+        .content a:hover {
+            color: var(--accent-strong);
+            text-decoration: underline;
         }
 
-        code {
-            background-color: var(--code-bg);
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
+        .content strong {
+            color: var(--accent);
         }
 
-        pre {
-            background-color: var(--code-bg);
-            padding: 15px;
-            border-radius: 6px;
+        .content code {
+            background: var(--code-bg);
+            border-radius: 8px;
+            padding: 0.15em 0.45em;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 0.92em;
+        }
+
+        .content pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
             overflow-x: auto;
-            margin: 15px 0;
-            border-left: 4px solid var(--heading-color);
         }
 
-        pre code {
-            background-color: transparent;
+        .content pre code {
+            background: transparent;
             padding: 0;
         }
 
-        table {
+        .content table {
             width: 100%;
+            display: block;
+            overflow-x: auto;
             border-collapse: collapse;
-            margin: 20px 0;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: var(--surface);
         }
 
-        th, td {
-            border: 1px solid var(--table-border-color);
-            padding: 12px;
+        .content th,
+        .content td {
+            padding: 12px 14px;
+            border: 1px solid var(--border);
             text-align: left;
+            vertical-align: top;
+            white-space: nowrap;
         }
 
-        th {
-            background-color: var(--table-header-bg);
-            font-weight: 600;
-            color: var(--heading-color);
+        .content th {
+            background: var(--surface-muted);
+            color: var(--accent);
         }
 
-        tr:nth-child(even) {
-            background-color: var(--code-bg);
+        .content .info-box {
+            margin: 1.25rem 0;
+            padding: 1rem 1.1rem;
+            background: var(--surface-muted);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--accent);
+            border-radius: 16px;
         }
 
-        .info-box {
-            background-color: var(--code-bg);
-            border-left: 4px solid var(--heading-color);
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-        }
-
-        strong {
-            color: var(--heading-color);
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
+        @media (max-width: 720px) {
+            .page {
+                padding: 84px 14px 24px;
             }
 
-            h1 {
-                font-size: 1.6em;
-                margin: 30px 0 15px 0;
-            }
-
-            h2 {
-                font-size: 1.3em;
-                margin: 25px 0 12px 0;
-            }
-
-            h3 {
-                font-size: 1.1em;
+            .hero,
+            .content {
+                padding: 20px;
+                border-radius: 18px;
             }
 
             .theme-toggle {
-                top: 10px;
-                right: 10px;
-                padding: 8px 12px;
-                font-size: 12px;
+                top: 12px;
+                right: 12px;
+                padding: 9px 12px;
             }
 
-            table {
-                font-size: 0.9em;
+            .content th,
+            .content td {
+                white-space: normal;
+                min-width: 140px;
             }
-
-            th, td {
-                padding: 8px;
-            }
-
-            ul, ol {
-                margin-left: 20px;
-            }
-        }
-
-        .toc {
-            background-color: var(--code-bg);
-            padding: 20px;
-            border-radius: 6px;
-            margin: 20px 0;
-        }
-
-        .toc h3 {
-            margin-top: 0;
-        }
-
-        .toc ul {
-            list-style-type: none;
-            margin-left: 0;
-        }
-
-        .toc li {
-            margin: 8px 0;
-            padding-left: 20px;
-        }
-
-        .toc a {
-            color: var(--link-color);
         }
     </style>
 </head>
 <body>
-    <button class="theme-toggle" onclick="toggleTheme()">🌙 ダークモード</button>
+    <button class="theme-toggle" type="button" aria-label="テーマ切り替え" onclick="toggleTheme()">🌙 ダークモード</button>
 
-    <div class="container">
-        <h1>Microsoft Scout まとめ</h1>
+    <div class="page">
+        <header class="hero">
+            <h1>Microsoft Scout まとめ</h1>
+            <p>Microsoft Scout の役割、特徴、利用条件を整理した HTML 版です。ライトモードが既定で、右上のボタンからダークモードに切り替えられます。</p>
+        </header>
+        <main class="content">
 
         <h2>概要</h2>
         <p>Microsoft Scout は、Microsoft が 2026 年 6 月に発表した <strong>「Autopilot」カテゴリの最初のエージェント</strong>です。<br>
@@ -355,54 +363,26 @@
             <li><a href="https://learn.microsoft.com/en-us/microsoft-scout/faq" target="_blank">Microsoft Learn: Microsoft Scout common questions</a></li>
             <li><a href="https://learn.microsoft.com/en-us/microsoft-scout/admin-access-overview" target="_blank">Microsoft Learn: Admin access overview for Microsoft Scout</a></li>
         </ol>
+        </main>
     </div>
 
     <script>
-        // テーマ切り替え機能
+        const root = document.documentElement;
+        const button = document.querySelector('.theme-toggle');
+
+        function setTheme(theme) {
+            const dark = theme === 'dark';
+            root.classList.toggle('dark-mode', dark);
+            button.textContent = dark ? '☀️ ライトモード' : '🌙 ダークモード';
+            localStorage.setItem('preferred-theme', theme);
+        }
+
         function toggleTheme() {
-            const html = document.documentElement;
-            const savedTheme = localStorage.getItem('theme');
-            
-            if (!savedTheme) {
-                // 初回：ダークモードをセット
-                localStorage.setItem('theme', 'dark');
-            } else {
-                // 以降：保存済みテーマをトグル
-                const newTheme = savedTheme === 'light' ? 'dark' : 'light';
-                localStorage.setItem('theme', newTheme);
-            }
-            
-            updateTheme();
+            setTheme(root.classList.contains('dark-mode') ? 'light' : 'dark');
         }
 
-        function updateTheme() {
-            const html = document.documentElement;
-            const button = document.querySelector('.theme-toggle');
-            const savedTheme = localStorage.getItem('theme');
-            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
-            // テーマの決定（保存済み > システム設定 > デフォルトはライトモード）
-            const shouldBeDark = savedTheme ? savedTheme === 'dark' : isDark;
-            
-            if (shouldBeDark) {
-                html.classList.add('dark-mode');
-                button.textContent = '☀️ ライトモード';
-            } else {
-                html.classList.remove('dark-mode');
-                button.textContent = '🌙 ダークモード';
-            }
-        }
-
-        // ページロード時にテーマを適用
-        document.addEventListener('DOMContentLoaded', updateTheme);
-        
-        // システムテーマが変更された場合に対応
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-            // 保存済みテーマがない場合のみシステム設定に追従
-            if (!localStorage.getItem('theme')) {
-                updateTheme();
-            }
-        });
+        const savedTheme = localStorage.getItem('preferred-theme');
+        setTheme(savedTheme === 'dark' ? 'dark' : 'light');
     </script>
 </body>
 </html>
