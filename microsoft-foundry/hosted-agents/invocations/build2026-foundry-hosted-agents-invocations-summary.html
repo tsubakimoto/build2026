@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build 2026 の Foundry Hosted Agents アップデートから見る invocations まとめ</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --surface-muted: #f0f4fa;
+            --text: #1b1f24;
+            --muted: #5a6472;
+            --border: #d7deea;
+            --accent: #0f6cbd;
+            --accent-strong: #084b91;
+            --code-bg: #eef3f9;
+            --shadow: 0 20px 40px rgba(15, 108, 189, 0.08);
+        }
+
+        html.dark-mode {
+            color-scheme: dark;
+            --bg: #0f1722;
+            --surface: #182230;
+            --surface-muted: #111a26;
+            --text: #e8eef7;
+            --muted: #aab7c8;
+            --border: #2a3a4f;
+            --accent: #7cc2ff;
+            --accent-strong: #a7d7ff;
+            --code-bg: #0f1a28;
+            --shadow: 0 24px 48px rgba(0, 0, 0, 0.32);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+            background: linear-gradient(180deg, var(--surface-muted) 0%, var(--bg) 180px);
+            color: var(--text);
+            line-height: 1.75;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 10;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            border-radius: 999px;
+            padding: 10px 14px;
+            font: inherit;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+        }
+
+        .page {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 72px 20px 40px;
+        }
+
+        .hero {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            margin: 0;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            line-height: 1.2;
+            color: var(--accent);
+        }
+
+        .hero p {
+            margin: 12px 0 0;
+            color: var(--muted);
+        }
+
+        .content {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+            overflow-wrap: anywhere;
+        }
+
+        .content > h1:first-child {
+            display: none;
+        }
+
+        .content h2,
+        .content h3,
+        .content h4 {
+            scroll-margin-top: 88px;
+        }
+
+        .content h2 {
+            margin: 2.25rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+            color: var(--accent);
+            font-size: clamp(1.45rem, 2.4vw, 1.8rem);
+        }
+
+        .content h3 {
+            margin: 1.75rem 0 0.75rem;
+            color: var(--text);
+            font-size: clamp(1.15rem, 2vw, 1.35rem);
+        }
+
+        .content p,
+        .content ul,
+        .content ol,
+        .content table {
+            margin: 1rem 0;
+        }
+
+        .content ul,
+        .content ol {
+            padding-left: 1.4rem;
+        }
+
+        .content li + li {
+            margin-top: 0.45rem;
+        }
+
+        .content a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .content a:hover {
+            color: var(--accent-strong);
+            text-decoration: underline;
+        }
+
+        .content strong {
+            color: var(--accent);
+        }
+
+        .content code {
+            background: var(--code-bg);
+            border-radius: 8px;
+            padding: 0.15em 0.45em;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 0.92em;
+        }
+
+        .content table {
+            width: 100%;
+            display: block;
+            overflow-x: auto;
+            border-collapse: collapse;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: var(--surface);
+        }
+
+        .content th,
+        .content td {
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            text-align: left;
+            vertical-align: top;
+            white-space: nowrap;
+        }
+
+        .content th {
+            background: var(--surface-muted);
+            color: var(--accent);
+        }
+
+        .content blockquote {
+            margin: 1rem 0;
+            padding: 0.75rem 1rem;
+            border-left: 4px solid var(--accent);
+            background: var(--surface-muted);
+            color: var(--muted);
+            border-radius: 0 12px 12px 0;
+        }
+
+        @media (max-width: 720px) {
+            .page {
+                padding: 84px 14px 24px;
+            }
+
+            .hero,
+            .content {
+                padding: 20px;
+                border-radius: 18px;
+            }
+
+            .theme-toggle {
+                top: 12px;
+                right: 12px;
+                padding: 9px 12px;
+            }
+
+            .content th,
+            .content td {
+                white-space: normal;
+                min-width: 140px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" type="button" aria-label="テーマ切り替え" onclick="toggleTheme()">🌙 ダークモード</button>
+    <div class="page">
+        <header class="hero">
+            <h1>Build 2026 の Foundry Hosted Agents アップデートから見る <code>invocations</code> まとめ</h1>
+            <p>Markdown をもとに整形した HTML 版です。ライトモードが既定で、右上のボタンからダークモードに切り替えられます。</p>
+        </header>
+        <main class="content">
+<h1>Build 2026 の Foundry Hosted Agents アップデートから見る <code>invocations</code> まとめ</h1>
+
+<h2>要点</h2>
+
+<p>Build 2026 の Hosted Agents における <code>invocations</code> は、<strong>Foundry が chat 専用ホスティングではなく、任意の入出力契約を受け止める agent runtime へ広がった</strong>ことを示すアップデートです。</p>
+
+<p><code>responses</code> が OpenAI 互換の会話 API なのに対し、<code>invocations</code> は <strong>bytes in / bytes out</strong> の生の受け渡しです。つまり、Hosted Agents 上のコンテナが自分で JSON、SSE、Webhook payload、独自 UI 向けイベントを定義でき、Foundry はそれをセッション付きで安全に動かす実行基盤になります。</p>
+
+<h2>Build 2026 文脈での位置づけ</h2>
+
+<p>Hosted Agents 全体の Build 2026 での進化は、次の流れで理解すると分かりやすいです。</p>
+
+<ol>
+    <li><strong>セッション単位の isolated sandbox</strong></li>
+    <li><strong>永続状態 (<code>$HOME</code> / <code>/files</code>)</strong></li>
+    <li><strong>agent identity と安全な接続</strong></li>
+    <li><strong>複数プロトコル対応</strong></li>
+    <li><strong>評価・監視・運用まで含む本番導線</strong></li>
+</ol>
+
+<p>この中で <code>invocations</code> は、特に <strong>「複数プロトコル対応」</strong> を実務に落とし込むための中核です。Build 2026 では Hosted Agents が以下のプロトコルを持てる形で整理されました。</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>プロトコル</th>
+            <th>役割</th>
+            <th>向いている用途</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>responses</code></td>
+            <td>OpenAI 互換の会話 API</td>
+            <td>通常のチャット、Copilot 的な対話</td>
+        </tr>
+        <tr>
+            <td><code>invocations</code></td>
+            <td>HTTP ベースのカスタム入出力</td>
+            <td>webhook、分類、抽出、独自フロントエンド、プロトコル bridge</td>
+        </tr>
+        <tr>
+            <td><code>invocations_ws</code></td>
+            <td>双方向 WebSocket</td>
+            <td>音声、リアルタイム streaming、シグナリング</td>
+        </tr>
+    </tbody>
+</table>
+
+<p>要するに、Build 2026 のアップデートでは <strong>Hosted Agents が「LLM チャットを置く場所」から「任意プロトコルの agent backend」を置く場所へ拡張された</strong>、その代表が <code>invocations</code> です。</p>
+
+<h2><code>invocations</code> の本質</h2>
+
+<p><code>invocations</code> の重要点は 3 つです。</p>
+
+<h3>1. 入出力スキーマをプラットフォームが決めない</h3>
+
+<p><code>responses</code> では <code>inputText</code> が自然言語メッセージとして扱われますが、<code>invocations</code> では <strong>HTTP リクエストボディがそのままコンテナに渡されます</strong>。</p>
+
+<ul>
+    <li>JSON を受けてもよい</li>
+    <li>バイナリを受けてもよい</li>
+    <li>SSE を返してもよい</li>
+    <li>独自の request / response 契約でもよい</li>
+</ul>
+
+<p>このため <code>invocations</code> は、LLM との会話というより <strong>「Hosted Agent を自前 API として公開する」</strong> 感覚に近いです。</p>
+
+<h3>2. 会話履歴ではなくセッション状態で継続する</h3>
+
+<p><code>responses</code> は <code>conversationId</code> による platform-managed history が中心ですが、<code>invocations</code> はそうではありません。</p>
+
+<ul>
+    <li>状態継続は <strong><code>sessionId</code> ベース</strong></li>
+    <li>会話や処理コンテキストは <strong>agent 側が管理</strong></li>
+    <li>Hosted Agents の永続ストレージと組み合わせて resume できる</li>
+</ul>
+
+<p>つまり <code>invocations</code> は、<strong>会話 API というより stateful worker/session runtime</strong> として使うのが自然です。</p>
+
+<h3>3. 外部システムとの接続点になれる</h3>
+
+<p>Build セッション群で強調されていた「OSS フレームワーク対応」「custom harness」「GitHub Copilot SDK などとの橋渡し」は、<code>invocations</code> と相性が良いです。</p>
+
+<p>典型例:</p>
+
+<ul>
+    <li>GitHub / Jira / Stripe などの webhook 受信</li>
+    <li>独自 UI から structured payload を送る</li>
+    <li>MCP や独自プロトコルの bridge を置く</li>
+    <li>非 conversational な分類・抽出・変換 API を実装する</li>
+</ul>
+
+<h2>Hosted Agents のアップデートとして見た価値</h2>
+
+<p><code>invocations</code> が重要なのは、Build 2026 の Hosted Agents の価値を次のように具体化するからです。</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Build 2026 の強調点</th>
+            <th><code>invocations</code> で何ができるか</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>セッションごとの sandbox</td>
+            <td>呼び出しごとに分離された安全な処理実行</td>
+        </tr>
+        <tr>
+            <td>永続ファイル / 状態</td>
+            <td>ワークフロー途中の状態や生成物を保持</td>
+        </tr>
+        <tr>
+            <td>elastic scale</td>
+            <td>webhook やバックエンド処理をスケールさせやすい</td>
+        </tr>
+        <tr>
+            <td>identity / networking</td>
+            <td>下流 Azure サービスへ安全に接続できる</td>
+        </tr>
+        <tr>
+            <td>observability / eval</td>
+            <td>実処理を trace し、運用評価につなげられる</td>
+        </tr>
+    </tbody>
+</table>
+
+<p>これにより <code>invocations</code> は、単なるカスタム API ではなく <strong>Foundry の本番運用機能を持った custom agent endpoint</strong> として使えます。</p>
+
+<h2><code>responses</code> とどう使い分けるか</h2>
+
+<p>最も実務的な整理は次の通りです。</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>使い分け</th>
+            <th>選ぶべきもの</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>人との会話が中心</td>
+            <td><code>responses</code></td>
+        </tr>
+        <tr>
+            <td>UI や外部システムから構造化データを渡したい</td>
+            <td><code>invocations</code></td>
+        </tr>
+        <tr>
+            <td>双方向で低遅延に流したい</td>
+            <td><code>invocations_ws</code></td>
+        </tr>
+        <tr>
+            <td>session 単位で状態を持つ独自処理を動かしたい</td>
+            <td><code>invocations</code></td>
+        </tr>
+    </tbody>
+</table>
+
+<p>Build 2026 の Hosted Agents は、<strong>まず <code>responses</code> で始め、要件が会話 API をはみ出したら <code>invocations</code> に寄せる</strong>という判断がしやすくなったと言えます。</p>
+
+<h2>Build セッションで特に関連が深いもの</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>セッション</th>
+            <th><code>invocations</code> 観点での読みどころ</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><a href="https://build.microsoft.com/en-US/sessions/LIVE170">LIVE170</a></td>
+            <td>Hosted Agents を本番ランタイムとしてどう使うかの全体像</td>
+        </tr>
+        <tr>
+            <td><a href="https://build.microsoft.com/en-US/sessions/BRK241">BRK241</a></td>
+            <td>prototype から production へ持っていく際の identity / networking / lifecycle</td>
+        </tr>
+        <tr>
+            <td><a href="https://build.microsoft.com/en-US/sessions/BRK243">BRK243</a></td>
+            <td>long-running、state、multi-agent など <code>invocations</code> と相性が良い設計論</td>
+        </tr>
+        <tr>
+            <td><a href="https://build.microsoft.com/en-US/sessions/LAB540">LAB540</a></td>
+            <td>実運用で trace / eval / protect をどう回すか</td>
+        </tr>
+        <tr>
+            <td><a href="https://build.microsoft.com/en-US/sessions/DEM333">DEM333</a></td>
+            <td>OSS や外部ツールとの接続先として Hosted Agents をどう使うか</td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>実務での理解</h2>
+
+<p>一言でいうと、Build 2026 の <code>invocations</code> は <strong>「Foundry Hosted Agents を会話 API ではなく、セッション付きのカスタム agent backend として使えるようにしたもの」</strong>です。</p>
+
+<p>その結果、Hosted Agents は次の領域までカバーできるようになりました。</p>
+
+<ul>
+    <li>conversational agent</li>
+    <li>webhook-driven agent</li>
+    <li>structured processing endpoint</li>
+    <li>tool / protocol bridge</li>
+    <li>stateful long-running backend</li>
+</ul>
+
+<h2>補助ドキュメント</h2>
+
+<ul>
+    <li>Hosted Agents 概念: <a href="https://learn.microsoft.com/azure/foundry/agents/concepts/hosted-agents">https://learn.microsoft.com/azure/foundry/agents/concepts/hosted-agents</a></li>
+    <li>Foundry Hosted Agents: <a href="https://learn.microsoft.com/agent-framework/hosting/foundry-hosted-agent">https://learn.microsoft.com/agent-framework/hosting/foundry-hosted-agent</a></li>
+    <li>Quickstart: <a href="https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-hosted-agent">https://learn.microsoft.com/azure/foundry/agents/quickstarts/quickstart-hosted-agent</a></li>
+    <li>Manage hosted agents: <a href="https://learn.microsoft.com/azure/foundry/agents/how-to/manage-hosted-agent">https://learn.microsoft.com/azure/foundry/agents/how-to/manage-hosted-agent</a></li>
+</ul>
+
+<h2>結論</h2>
+
+<p>Build 2026 の Hosted Agents アップデートを <code>invocations</code> から見ると、重要なのは <strong>Foundry が chat endpoint の提供だけでなく、任意スキーマ・任意ワークフローの agent 実行基盤へ拡張された</strong>ことです。</p>
+
+<p><code>responses</code> が「会話」、<code>invocations</code> が「カスタム処理」、<code>invocations_ws</code> が「リアルタイム双方向」と整理できるため、Hosted Agents の設計判断がかなり明確になりました。</p>
+        </main>
+    </div>
+
+    <script>
+        const root = document.documentElement;
+        const button = document.querySelector('.theme-toggle');
+
+        function setTheme(theme) {
+            const dark = theme === 'dark';
+            root.classList.toggle('dark-mode', dark);
+            button.textContent = dark ? '☀️ ライトモード' : '🌙 ダークモード';
+            localStorage.setItem('preferred-theme', theme);
+        }
+
+        function toggleTheme() {
+            setTheme(root.classList.contains('dark-mode') ? 'light' : 'dark');
+        }
+
+        const savedTheme = localStorage.getItem('preferred-theme');
+        setTheme(savedTheme === 'dark' ? 'dark' : 'light');
+    </script>
+</body>
+</html>
